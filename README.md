@@ -1,10 +1,10 @@
 # github-commenter [![Build Status](https://travis-ci.org/cloudposse/github-commenter.svg?branch=master)](https://travis-ci.org/cloudposse/github-commenter)
 
-Command line utility for creating GitHub comments on Pull Request, Issues and Commits.
+Command line utility for creating GitHub comments on Commits, Pull Request or Issues.
 
+* https://developer.github.com/v3/repos/comments
 * https://developer.github.com/v3/pulls/comments
 * https://developer.github.com/v3/issues/comments
-* https://developer.github.com/v3/repos/comments
 
 
 It accepts the text of the comment as a command-line argument, from an ENV variable, or from the standard input.
