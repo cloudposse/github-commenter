@@ -7,7 +7,10 @@ Command line utility for creating GitHub comments on Commits, Pull Request or Is
 * https://developer.github.com/v3/issues/comments
 
 
-It accepts the text of the comment as a command-line argument, from an ENV variable, or from the standard input.
+__NOTE__: Create a [GitHub token](https://help.github.com/articles/creating-an-access-token-for-command-line-use) with `repo:status` and `public_repo` scopes
+
+
+The module accepts the text of the comment as a command-line argument, from an ENV variable, or from the standard input.
 
 Accepting comments from `stdin` allows using Linux pipes to send the output of another program as the input to the module
 
