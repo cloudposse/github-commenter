@@ -1,5 +1,22 @@
 # github-commenter [![Build Status](https://travis-ci.org/cloudposse/github-commenter.svg?branch=master)](https://travis-ci.org/cloudposse/github-commenter)
 
+Command line utility for creating GitHub Pull Request and commit comments.
+
+* https://developer.github.com/v3/pulls/comments
+* https://developer.github.com/v3/repos/comments
+
+
+It accept the text of the comment as a command-line argument or from the standard input.
+
+Accepting comments from `stdin` allows using Linux pipes to send the output of another program as the input to the module
+
+```sh
+    cat comment.txt | github-commenter ...
+```
+
+```sh
+    terraform plan | github-commenter ...
+```
 
 
 ## Help
