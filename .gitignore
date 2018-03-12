@@ -15,3 +15,5 @@
 
 .idea
 github-commenter.iml
+dist/bin
+.build-harness
