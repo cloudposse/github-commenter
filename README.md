@@ -3,7 +3,7 @@
 Command line utility for creating GitHub comments on Pull Request, Issues and Commits.
 
 * https://developer.github.com/v3/pulls/comments
-* https://developer.github.com/v3/issues/comments/
+* https://developer.github.com/v3/issues/comments
 * https://developer.github.com/v3/repos/comments
 
 
