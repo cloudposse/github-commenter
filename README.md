@@ -65,7 +65,7 @@ export GITHUB_OWNER=cloudposse
 export GITHUB_REPO=github-commenter
 export GITHUB_COMMENT_TYPE=pr
 export GITHUB_PR_ISSUE_NUMBER=1
-export GITHUB_COMMENT_FORMAT="My comment\n{{.Input}}"
+export GITHUB_COMMENT_FORMAT="My comment\n{{.}}"
 export GITHUB_COMMENT="+1 LGTM"
 
 ./dist/bin/github-commenter
@@ -82,7 +82,7 @@ export GITHUB_COMMENT="+1 LGTM"
         -repo github-commenter \
         -type pr \
         -number 1 \
-        -format "My comment\n{{.Input}}" \
+        -format "My comment\n{{.}}" \
         -comment "+1 LGTM"
 ```
 
@@ -108,7 +108,7 @@ docker run -i --rm \
         -e GITHUB_REPO=github-commenter \
         -e GITHUB_COMMENT_TYPE=pr \
         -e GITHUB_PR_ISSUE_NUMBER=1 \
-        -e GITHUB_COMMENT_FORMAT="My comment\n{{.Input}}" \
+        -e GITHUB_COMMENT_FORMAT="My comment\n{{.}}" \
         -e GITHUB_COMMENT="+1 LGTM" \
         github-commenter
 ```
@@ -124,7 +124,7 @@ export GITHUB_OWNER=cloudposse
 export GITHUB_REPO=github-commenter
 export GITHUB_COMMENT_TYPE=pr
 export GITHUB_PR_ISSUE_NUMBER=1
-export GITHUB_COMMENT_FORMAT="My comment\n{{.Input}}"
+export GITHUB_COMMENT_FORMAT="My comment\n{{.}}"
 export GITHUB_COMMENT="+1 LGTM"
 
 docker run -i --rm \

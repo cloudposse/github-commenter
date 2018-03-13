@@ -78,12 +78,6 @@ func formatComment(comment string) (string, error) {
 		return comment, nil
 	}
 
-	type inputType struct {
-		Input string
-	}
-
-	formatted := inputType{comment}
-
 	t, err := template.New("formatComment").Parse(*format)
 	if err != nil {
 		return "", err
@@ -91,7 +85,7 @@ func formatComment(comment string) (string, error) {
 
 	var doc bytes.Buffer
 
-	err = t.Execute(&doc, formatted)
+	err = t.Execute(&doc, comment)
 	if err != nil {
 		return "", err
 	}
