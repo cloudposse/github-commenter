@@ -23,8 +23,8 @@ Command-line arguments take precedence over ENV vars
 | Command-line argument |  ENV var                 |  Description                                                                                                               |
 |:----------------------|:-------------------------|:---------------------------------------------------------------------------------------------------------------------------|
 | token                 | GITHUB_TOKEN             | Github access [token](https://help.github.com/articles/creating-an-access-token-for-command-line-use)                      |
-| owner                 | GITHUB_OWNER             | Github repository owner (_e.g._ `cloudposse`                                                                               |
-| repo                  | GITHUB_REPO              | Github repository name (_e.g._ `github-commenter`                                                                          |
+| owner                 | GITHUB_OWNER             | Github repository owner (_e.g._ `cloudposse`)                                                                              |
+| repo                  | GITHUB_REPO              | Github repository name (_e.g._ `github-commenter`)                                                                         |
 | type                  | GITHUB_COMMENT_TYPE      | Comment type: `commit`, `pr` or `issue`                                                                                    |
 | sha                   | GITHUB_COMMIT_SHA        | Commit SHA. Required when `type=commit`                                                                                    |
 | number                | GITHUB_PR_ISSUE_NUMBER   | Pull Request or Issue number. Required when `type=pr` or `type=issue`                                                      |
