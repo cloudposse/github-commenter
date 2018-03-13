@@ -2,14 +2,14 @@
 
 ## Introduction
 
-Command line utility for creating GitHub comments on Commits, Pull Request or Issues.
+Command line utility for creating GitHub comments on Commits, Pull Request Reviews or Issues.
 
-* https://developer.github.com/v3/repos/comments
-* https://developer.github.com/v3/pulls/comments
-* https://developer.github.com/v3/issues/comments
+* https://developer.github.com/v3/repos/comments/#create-a-commit-comment
+* https://developer.github.com/v3/pulls/reviews/#create-a-pull-request-review
+* https://developer.github.com/v3/issues/comments/#create-a-comment
 
 
-![GitHub Commit Comment](images/github-commit-comment.png)
+![GitHub PR Review Comment](images/github-pr-review-comment.png)
 
 
 ## Usage

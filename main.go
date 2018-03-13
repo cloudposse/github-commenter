@@ -161,13 +161,14 @@ func main() {
 		}
 
 		// https://developer.github.com/v3/pulls/comments
-		pullRequestComment := &github.PullRequestComment{Body: &formattedComment}
-		pullRequestComment, _, err = githubClient.PullRequests.CreateComment(context.Background(), *owner, *repo, num, pullRequestComment)
+		// https://developer.github.com/v3/pulls/reviews/#create-a-pull-request-review
+		pullRequestReviewComment := &github.PullRequestReviewRequest{Body: &formattedComment, Event: github.String("COMMENT")}
+		pullRequestReview, _, err := githubClient.PullRequests.CreateReview(context.Background(), *owner, *repo, num, pullRequestReviewComment)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		fmt.Println("github-commenter: created GitHub PR comment", pullRequestComment.ID)
+		fmt.Println("github-commenter: created GitHub PR Review comment", pullRequestReview.ID)
 	} else if *commentType == "issue" {
 		num, err := getPullRequestOrIssueNumber(*number)
 		if err != nil {
