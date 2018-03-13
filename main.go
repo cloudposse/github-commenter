@@ -31,7 +31,7 @@ var (
 	commentType = flag.String("type", os.Getenv("GITHUB_COMMENT_TYPE"), "Comment type: 'commit', 'pr' or 'issue'")
 	sha         = flag.String("sha", os.Getenv("GITHUB_COMMIT_SHA"), "Commit SHA")
 	number      = flag.String("number", os.Getenv("GITHUB_PR_ISSUE_NUMBER"), "Pull Request or Issue number")
-	format      = flag.String("format", os.Getenv("GITHUB_COMMENT_FORMAT"), "Comment format")
+	format      = flag.String("format", os.Getenv("GITHUB_COMMENT_FORMAT"), "Comment format. Supports 'Go' templates: My comment:<br>{{.}}")
 	comment     = flag.String("comment", os.Getenv("GITHUB_COMMENT"), "Comment text")
 )
 

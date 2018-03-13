@@ -9,6 +9,9 @@ Command line utility for creating GitHub comments on Commits, Pull Request or Is
 * https://developer.github.com/v3/issues/comments
 
 
+![GitHub Commit Comment](images/github-commit-comment.png)
+
+
 ## Usage
 
 __NOTE__: Create a [GitHub token](https://help.github.com/articles/creating-an-access-token-for-command-line-use) with `repo:status` and `public_repo` scopes
@@ -17,16 +20,16 @@ __NOTE__: The module accepts parameters as command-line arguments or as ENV vari
 Command-line arguments take precedence over ENV vars
 
 
-| Command-line argument |  ENV var                 |  Description                                                                                                            |
-|:----------------------|:-------------------------|:------------------------------------------------------------------------------------------------------------------------|
-| token                 | GITHUB_TOKEN             | Github access [token](https://help.github.com/articles/creating-an-access-token-for-command-line-use)                   |
-| owner                 | GITHUB_OWNER             | Github repository owner (_e.g._ `cloudposse`                                                                            |
-| repo                  | GITHUB_REPO              | Github repository name (_e.g._ `github-commenter`                                                                       |
-| type                  | GITHUB_COMMENT_TYPE      | Comment type: `commit`, `pr` or `issue`                                                                                 |
-| sha                   | GITHUB_COMMIT_SHA        | Commit SHA. Required when `type=commit`                                                                                 |
-| number                | GITHUB_PR_ISSUE_NUMBER   | Pull Request or Issue number. Required when `type=pr` or `type=issue`                                                   |
-| format                | GITHUB_COMMENT_FORMAT    | Comment format (optional). Supports `Go` [templates](https://golang.org/pkg/text/template). _E.g._ `My comment\n{{.}}`  |
-| comment               | GITHUB_COMMENT           | Comment text. If neither `comment` nor `GITHUB_COMMENT` provided, will read from `stdin`                                |
+| Command-line argument |  ENV var                 |  Description                                                                                                               |
+|:----------------------|:-------------------------|:---------------------------------------------------------------------------------------------------------------------------|
+| token                 | GITHUB_TOKEN             | Github access [token](https://help.github.com/articles/creating-an-access-token-for-command-line-use)                      |
+| owner                 | GITHUB_OWNER             | Github repository owner (_e.g._ `cloudposse`                                                                               |
+| repo                  | GITHUB_REPO              | Github repository name (_e.g._ `github-commenter`                                                                          |
+| type                  | GITHUB_COMMENT_TYPE      | Comment type: `commit`, `pr` or `issue`                                                                                    |
+| sha                   | GITHUB_COMMIT_SHA        | Commit SHA. Required when `type=commit`                                                                                    |
+| number                | GITHUB_PR_ISSUE_NUMBER   | Pull Request or Issue number. Required when `type=pr` or `type=issue`                                                      |
+| format                | GITHUB_COMMENT_FORMAT    | Comment format (optional). Supports `Go` [templates](https://golang.org/pkg/text/template): `My comment:<br>{{.}}`         |
+| comment               | GITHUB_COMMENT           | Comment text. If neither `comment` nor `GITHUB_COMMENT` provided, will read from `stdin`                                   |
 
 
 __NOTE__: The module accepts the text of the comment from the command-line argument `comment`, from the ENV variable `GITHUB_COMMENT`, or from the standard input.
@@ -65,7 +68,7 @@ export GITHUB_OWNER=cloudposse
 export GITHUB_REPO=github-commenter
 export GITHUB_COMMENT_TYPE=pr
 export GITHUB_PR_ISSUE_NUMBER=1
-export GITHUB_COMMENT_FORMAT="My comment\n{{.}}"
+export GITHUB_COMMENT_FORMAT="My comment:<br>{{.}}"
 export GITHUB_COMMENT="+1 LGTM"
 
 ./dist/bin/github-commenter
@@ -82,7 +85,7 @@ export GITHUB_COMMENT="+1 LGTM"
         -repo github-commenter \
         -type pr \
         -number 1 \
-        -format "My comment\n{{.}}" \
+        -format "My comment:<br>{{.}}" \
         -comment "+1 LGTM"
 ```
 
@@ -108,7 +111,7 @@ docker run -i --rm \
         -e GITHUB_REPO=github-commenter \
         -e GITHUB_COMMENT_TYPE=pr \
         -e GITHUB_PR_ISSUE_NUMBER=1 \
-        -e GITHUB_COMMENT_FORMAT="My comment\n{{.}}" \
+        -e GITHUB_COMMENT_FORMAT="My comment:<br>{{.}}" \
         -e GITHUB_COMMENT="+1 LGTM" \
         github-commenter
 ```
@@ -124,7 +127,7 @@ export GITHUB_OWNER=cloudposse
 export GITHUB_REPO=github-commenter
 export GITHUB_COMMENT_TYPE=pr
 export GITHUB_PR_ISSUE_NUMBER=1
-export GITHUB_COMMENT_FORMAT="My comment\n{{.}}"
+export GITHUB_COMMENT_FORMAT="My comment:<br>{{.}}"
 export GITHUB_COMMENT="+1 LGTM"
 
 docker run -i --rm \
