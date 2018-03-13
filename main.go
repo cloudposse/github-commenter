@@ -31,8 +31,8 @@ var (
 	commentType = flag.String("type", os.Getenv("GITHUB_COMMENT_TYPE"), "Comment type: 'commit', 'pr' or 'issue'")
 	sha         = flag.String("sha", os.Getenv("GITHUB_COMMIT_SHA"), "Commit SHA")
 	number      = flag.String("number", os.Getenv("GITHUB_PR_ISSUE_NUMBER"), "Pull Request or Issue number")
-	comment     = flag.String("comment", os.Getenv("GITHUB_COMMENT"), "Comment text")
 	format      = flag.String("format", os.Getenv("GITHUB_COMMENT_FORMAT"), "Comment format")
+	comment     = flag.String("comment", os.Getenv("GITHUB_COMMENT"), "Comment text")
 )
 
 func getPullRequestOrIssueNumber(str string) (int, error) {
@@ -49,7 +49,7 @@ func getPullRequestOrIssueNumber(str string) (int, error) {
 }
 
 func getComment() (string, error) {
-	// Read the comment text from a command-line argument or ENV var first
+	// Read the comment from the command-line argument or ENV var first
 	if *comment != "" {
 		return *comment, nil
 	}
@@ -100,13 +100,6 @@ func formatComment(comment string) (string, error) {
 }
 
 func main() {
-	//command := newGomplateCmd()
-	//initFlags(command)
-	//if err := command.Execute(); err != nil {
-	//	fmt.Println(err)
-	//	os.Exit(1)
-	//}
-
 	flag.Parse()
 
 	if *token == "" {

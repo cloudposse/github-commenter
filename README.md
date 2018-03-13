@@ -1,5 +1,7 @@
 # github-commenter [![Build Status](https://travis-ci.org/cloudposse/github-commenter.svg?branch=master)](https://travis-ci.org/cloudposse/github-commenter)
 
+## Introduction
+
 Command line utility for creating GitHub comments on Commits, Pull Request or Issues.
 
 * https://developer.github.com/v3/repos/comments
@@ -7,12 +9,29 @@ Command line utility for creating GitHub comments on Commits, Pull Request or Is
 * https://developer.github.com/v3/issues/comments
 
 
+## Usage
+
 __NOTE__: Create a [GitHub token](https://help.github.com/articles/creating-an-access-token-for-command-line-use) with `repo:status` and `public_repo` scopes
 
+__NOTE__: The module accepts parameters as command-line arguments or as ENV variables (or any combination of command-line arguments and ENV vars).
+Command-line arguments take precedence over ENV vars.
 
-The module accepts the text of the comment as a command-line argument, from an ENV variable, or from the standard input.
 
-Accepting comments from `stdin` allows using Linux pipes to send the output of another program as the input to the module
+| Command-line argument |  ENV var                 |  Description                                                                                          |
+|:----------------------|:-------------------------|:------------------------------------------------------------------------------------------------------|
+| token                 | GITHUB_TOKEN             | Github access [token](https://help.github.com/articles/creating-an-access-token-for-command-line-use) |
+| owner                 | GITHUB_OWNER             | Github repository owner                                                                               |
+| repo                  | GITHUB_REPO              | Github repository name                                                                                |
+| type                  | GITHUB_COMMENT_TYPE      | Comment type: `commit`, `pr` or `issue`                                                               |
+| sha                   | GITHUB_COMMIT_SHA        | Commit SHA. Required when `type=commit`                                                               |
+| number                | GITHUB_PR_ISSUE_NUMBER   | Pull Request or Issue number. Required when `type=pr` or `type=issue`                                 |
+| format                | GITHUB_COMMENT_FORMAT    | (Optional) comment format. Supports `Go` [templates](https://golang.org/pkg/text/template)            |
+| comment               | GITHUB_COMMENT           | Comment text. If neither `comment` nor `GITHUB_COMMENT` provided, will read from `stdin`              |
+
+
+__NOTE__: The module accepts the text of the comment from the command-line argument `comment`, from the ENV variable `GITHUB_COMMENT`, or from the standard input.
+Command-line argument takes precedence over ENV var, and ENV var takes precedence over standard input.
+Accepting comments from `stdin` allows using Unix pipes to send the output of another program as the input to the module
 
 ```sh
     cat comment.txt | github-commenter ...
@@ -21,6 +40,113 @@ Accepting comments from `stdin` allows using Linux pipes to send the output of a
 ```sh
     terraform plan | github-commenter ...
 ```
+
+
+## Examples
+
+The module can be called directly or as a Docker container.
+
+
+### build the Go program locally
+
+```sh
+go get
+
+CGO_ENABLED=0 go build -v -o "./dist/bin/github-commenter" *.go
+```
+
+
+### run locally with ENV vars
+[run_locally_with_env_vars.sh](examples/run_locally_with_env_vars.sh)
+
+```sh
+export GITHUB_TOKEN=XXXXXXXXXXXXXXXX
+export GITHUB_OWNER=cloudposse
+export GITHUB_REPO=github-commenter
+export GITHUB_COMMENT_TYPE=pr
+export GITHUB_PR_ISSUE_NUMBER=1
+export GITHUB_COMMENT_FORMAT="My comment\n{{.Input}}"
+export GITHUB_COMMENT="+1 LGTM"
+
+./dist/bin/github-commenter
+```
+
+
+### run locally with command-line arguments
+[run_locally_with_command_line_args.sh](examples/run_locally_with_command_line_args.sh)
+
+```sh
+./dist/bin/github-commenter \
+        -token XXXXXXXXXXXXXXXX \
+        -owner cloudposse \
+        -repo github-commenter \
+        -type pr \
+        -number 1 \
+        -format "My comment\n{{.Input}}" \
+        -comment "+1 LGTM"
+```
+
+
+
+### build the Docker image
+__NOTE__: it will download all `Go` dependencies and then build the program inside the container (see [`Dockerfile`](Dockerfile))
+
+
+```sh
+docker build --tag github-commenter  --no-cache=true .
+```
+
+
+
+### run in a Docker container with ENV vars
+[run_docker_with_env_vars.sh](examples/run_docker_with_env_vars.sh)
+
+```sh
+docker run -i --rm \
+        -e GITHUB_TOKEN=XXXXXXXXXXXXXXXX \
+        -e GITHUB_OWNER=cloudposse \
+        -e GITHUB_REPO=github-commenter \
+        -e GITHUB_COMMENT_TYPE=pr \
+        -e GITHUB_PR_ISSUE_NUMBER=1 \
+        -e GITHUB_COMMENT_FORMAT="My comment\n{{.Input}}" \
+        -e GITHUB_COMMENT="+1 LGTM" \
+        github-commenter
+```
+
+
+
+### run in a Docker container with local ENV vars propagated into the container's environment
+[run_docker_with_local_env_vars.sh](examples/run_docker_with_local_env_vars.sh)
+
+```sh
+export GITHUB_TOKEN=XXXXXXXXXXXXXXXX
+export GITHUB_OWNER=cloudposse
+export GITHUB_REPO=github-commenter
+export GITHUB_COMMENT_TYPE=pr
+export GITHUB_PR_ISSUE_NUMBER=1
+export GITHUB_COMMENT_FORMAT="My comment\n{{.Input}}"
+export GITHUB_COMMENT="+1 LGTM"
+
+docker run -i --rm \
+        -e GITHUB_TOKEN \
+        -e GITHUB_OWNER \
+        -e GITHUB_REPO \
+        -e GITHUB_COMMENT_TYPE \
+        -e GITHUB_PR_ISSUE_NUMBER \
+        -e GITHUB_COMMENT_FORMAT \
+        -e GITHUB_COMMENT \
+        github-commenter
+```
+
+
+
+### run in a Docker container with ENV vars declared in a file
+[run_docker_with_env_vars_file.sh](examples/run_docker_with_env_vars_file.sh)
+
+```sh
+docker run -i --rm --env-file ./example.env github-commenter
+```
+
 
 
 ## Help
