@@ -14,24 +14,24 @@ Command line utility for creating GitHub comments on Commits, Pull Request or Is
 __NOTE__: Create a [GitHub token](https://help.github.com/articles/creating-an-access-token-for-command-line-use) with `repo:status` and `public_repo` scopes
 
 __NOTE__: The module accepts parameters as command-line arguments or as ENV variables (or any combination of command-line arguments and ENV vars).
-Command-line arguments take precedence over ENV vars.
+Command-line arguments take precedence over ENV vars
 
 
-| Command-line argument |  ENV var                 |  Description                                                                                          |
-|:----------------------|:-------------------------|:------------------------------------------------------------------------------------------------------|
-| token                 | GITHUB_TOKEN             | Github access [token](https://help.github.com/articles/creating-an-access-token-for-command-line-use) |
-| owner                 | GITHUB_OWNER             | Github repository owner                                                                               |
-| repo                  | GITHUB_REPO              | Github repository name                                                                                |
-| type                  | GITHUB_COMMENT_TYPE      | Comment type: `commit`, `pr` or `issue`                                                               |
-| sha                   | GITHUB_COMMIT_SHA        | Commit SHA. Required when `type=commit`                                                               |
-| number                | GITHUB_PR_ISSUE_NUMBER   | Pull Request or Issue number. Required when `type=pr` or `type=issue`                                 |
-| format                | GITHUB_COMMENT_FORMAT    | (Optional) comment format. Supports `Go` [templates](https://golang.org/pkg/text/template)            |
-| comment               | GITHUB_COMMENT           | Comment text. If neither `comment` nor `GITHUB_COMMENT` provided, will read from `stdin`              |
+| Command-line argument |  ENV var                 |  Description                                                                                                            |
+|:----------------------|:-------------------------|:------------------------------------------------------------------------------------------------------------------------|
+| token                 | GITHUB_TOKEN             | Github access [token](https://help.github.com/articles/creating-an-access-token-for-command-line-use)                   |
+| owner                 | GITHUB_OWNER             | Github repository owner (_e.g._ `cloudposse`                                                                            |
+| repo                  | GITHUB_REPO              | Github repository name (_e.g._ `github-commenter`                                                                       |
+| type                  | GITHUB_COMMENT_TYPE      | Comment type: `commit`, `pr` or `issue`                                                                                 |
+| sha                   | GITHUB_COMMIT_SHA        | Commit SHA. Required when `type=commit`                                                                                 |
+| number                | GITHUB_PR_ISSUE_NUMBER   | Pull Request or Issue number. Required when `type=pr` or `type=issue`                                                   |
+| format                | GITHUB_COMMENT_FORMAT    | Comment format (optional). Supports `Go` [templates](https://golang.org/pkg/text/template). _E.g._ `My comment\n{{.}}`  |
+| comment               | GITHUB_COMMENT           | Comment text. If neither `comment` nor `GITHUB_COMMENT` provided, will read from `stdin`                                |
 
 
 __NOTE__: The module accepts the text of the comment from the command-line argument `comment`, from the ENV variable `GITHUB_COMMENT`, or from the standard input.
 Command-line argument takes precedence over ENV var, and ENV var takes precedence over standard input.
-Accepting comments from `stdin` allows using Unix pipes to send the output of another program as the input to the module
+Accepting comments from `stdin` allows using Unix pipes to send the output from another program as the input to the module
 
 ```sh
     cat comment.txt | github-commenter ...
