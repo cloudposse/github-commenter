@@ -41,7 +41,7 @@ Accepting comments from `stdin` allows using Unix pipes to send the output from 
 ```
 
 ```sh
-    terraform plan | github-commenter ...
+    terraform plan 2>&1 | github-commenter -format "Output from `terraform plan`<br>```{{.}}```"
 ```
 
 
