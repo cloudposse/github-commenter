@@ -131,8 +131,13 @@ func main() {
 			log.Fatal(err)
 		}
 
+		formattedComment, err := formatComment(comment)
+		if err != nil {
+			log.Fatal(err)
+		}
+
 		// https://developer.github.com/v3/repos/comments
-		commitComment := &github.RepositoryComment{Body: &comment}
+		commitComment := &github.RepositoryComment{Body: &formattedComment}
 		commitComment, _, err = githubClient.Repositories.CreateComment(context.Background(), *owner, *repo, *sha, commitComment)
 		if err != nil {
 			log.Fatal(err)
