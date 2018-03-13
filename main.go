@@ -1,15 +1,18 @@
 package main
 
 import (
+	"bytes"
 	"flag"
 	"fmt"
 	"github.com/google/go-github/github"
 	"github.com/pkg/errors"
 	"golang.org/x/net/context"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
 	"strconv"
+	"text/template"
 )
 
 type roundTripper struct {
@@ -25,10 +28,11 @@ var (
 	token       = flag.String("token", os.Getenv("GITHUB_TOKEN"), "Github access token")
 	owner       = flag.String("owner", os.Getenv("GITHUB_OWNER"), "Github repository owner")
 	repo        = flag.String("repo", os.Getenv("GITHUB_REPO"), "Github repository name")
-	commentType = flag.String("comment_type", os.Getenv("GITHUB_COMMENT_TYPE"), "Comment type: 'commit', 'pr' or 'issue'")
+	commentType = flag.String("type", os.Getenv("GITHUB_COMMENT_TYPE"), "Comment type: 'commit', 'pr' or 'issue'")
 	sha         = flag.String("sha", os.Getenv("GITHUB_COMMIT_SHA"), "Commit SHA")
 	number      = flag.String("number", os.Getenv("GITHUB_PR_ISSUE_NUMBER"), "Pull Request or Issue number")
 	comment     = flag.String("comment", os.Getenv("GITHUB_COMMENT"), "Comment text")
+	format      = flag.String("format", os.Getenv("GITHUB_COMMENT_FORMAT"), "Comment format")
 )
 
 func getPullRequestOrIssueNumber(str string) (int, error) {
@@ -45,10 +49,54 @@ func getPullRequestOrIssueNumber(str string) (int, error) {
 }
 
 func getComment() (string, error) {
+	// Read the comment text from a command-line argument or ENV var first
 	if *comment != "" {
 		return *comment, nil
 	}
-	return "", nil
+
+	// If not provided in the command-line argument or ENV var, try to read from Stdin
+	info, err := os.Stdin.Stat()
+	if err != nil {
+		return "", err
+	}
+
+	// Makes sure we have an input pipe, and it actually contains some bytes
+	if info.Mode()&os.ModeCharDevice != 0 || info.Size() <= 0 {
+		return "", errors.New("Comment must be provided either as command-line argument, ENV variable, or from 'Stdin'")
+	}
+
+	data, err := ioutil.ReadAll(os.Stdin)
+	if err != nil {
+		return "", err
+	}
+
+	return string(data), nil
+}
+
+func formatComment(comment string) (string, error) {
+	if *format == "" {
+		return comment, nil
+	}
+
+	type inputType struct {
+		Input string
+	}
+
+	formatted := inputType{comment}
+
+	t, err := template.New("formatComment").Parse(*format)
+	if err != nil {
+		return "", err
+	}
+
+	var doc bytes.Buffer
+
+	err = t.Execute(&doc, formatted)
+	if err != nil {
+		return "", err
+	}
+
+	return doc.String(), nil
 }
 
 func main() {
@@ -75,11 +123,11 @@ func main() {
 	}
 	if *commentType == "" {
 		flag.PrintDefaults()
-		log.Fatal("-comment_type or GITHUB_COMMENT_TYPE required")
+		log.Fatal("-type or GITHUB_COMMENT_TYPE required")
 	}
 	if *commentType != "commit" && *commentType != "pr" && *commentType != "issue" {
 		flag.PrintDefaults()
-		log.Fatal("-comment_type or GITHUB_COMMENT_TYPE must be one of 'commit', 'pr' or 'issue'")
+		log.Fatal("-type or GITHUB_COMMENT_TYPE must be one of 'commit', 'pr' or 'issue'")
 	}
 
 	http.DefaultClient.Transport = roundTripper{*token}
@@ -103,7 +151,7 @@ func main() {
 			log.Fatal(err)
 		}
 
-		fmt.Println("github-commenter: Created GitHub Commit comment", commitComment.ID)
+		fmt.Println("github-commenter: created GitHub Commit comment", commitComment.ID)
 	} else if *commentType == "pr" {
 		num, err := getPullRequestOrIssueNumber(*number)
 		if err != nil {
@@ -115,14 +163,19 @@ func main() {
 			log.Fatal(err)
 		}
 
+		formattedComment, err := formatComment(comment)
+		if err != nil {
+			log.Fatal(err)
+		}
+
 		// https://developer.github.com/v3/pulls/comments
-		pullRequestComment := &github.PullRequestComment{Body: &comment}
+		pullRequestComment := &github.PullRequestComment{Body: &formattedComment}
 		pullRequestComment, _, err = githubClient.PullRequests.CreateComment(context.Background(), *owner, *repo, num, pullRequestComment)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		fmt.Println("github-commenter: Created GitHub PR comment", pullRequestComment.ID)
+		fmt.Println("github-commenter: created GitHub PR comment", pullRequestComment.ID)
 	} else if *commentType == "issue" {
 		num, err := getPullRequestOrIssueNumber(*number)
 		if err != nil {
@@ -134,13 +187,18 @@ func main() {
 			log.Fatal(err)
 		}
 
+		formattedComment, err := formatComment(comment)
+		if err != nil {
+			log.Fatal(err)
+		}
+
 		// https://developer.github.com/v3/issues/comments
-		issueComment := &github.IssueComment{Body: &comment}
+		issueComment := &github.IssueComment{Body: &formattedComment}
 		issueComment, _, err = githubClient.Issues.CreateComment(context.Background(), *owner, *repo, num, issueComment)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		fmt.Println("github-commenter: Created GitHub Issue comment", issueComment.ID)
+		fmt.Println("github-commenter: created GitHub Issue comment", issueComment.ID)
 	}
 }
