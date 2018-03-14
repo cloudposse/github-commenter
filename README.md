@@ -28,7 +28,7 @@ Command-line arguments take precedence over ENV vars
 | type                  | GITHUB_COMMENT_TYPE      | Comment type: `commit`, `pr` or `issue`                                                                                    |
 | sha                   | GITHUB_COMMIT_SHA        | Commit SHA. Required when `type=commit`                                                                                    |
 | number                | GITHUB_PR_ISSUE_NUMBER   | Pull Request or Issue number. Required when `type=pr` or `type=issue`                                                      |
-| format                | GITHUB_COMMENT_FORMAT    | Comment format (optional). Supports `Go` [templates](https://golang.org/pkg/text/template): `My comment:<br>{{.}}`         |
+| format                | GITHUB_COMMENT_FORMAT    | Comment format (optional). Supports `Go` [templates](https://golang.org/pkg/text/template): `My comment:<br/>{{.}}`         |
 | comment               | GITHUB_COMMENT           | Comment text. If neither `comment` nor `GITHUB_COMMENT` provided, will read from `stdin`                                   |
 
 
@@ -41,7 +41,7 @@ Accepting comments from `stdin` allows using Unix pipes to send the output from 
 ```
 
 ```sh
-    terraform plan 2>&1 | github-commenter -format "Output from `terraform plan`<br>```{{.}}```"
+    terraform plan 2>&1 | github-commenter -format "Output from `terraform plan`<br/>```{{.}}```"
 ```
 
 
@@ -68,7 +68,7 @@ export GITHUB_OWNER=cloudposse
 export GITHUB_REPO=github-commenter
 export GITHUB_COMMENT_TYPE=pr
 export GITHUB_PR_ISSUE_NUMBER=1
-export GITHUB_COMMENT_FORMAT="My comment:<br>{{.}}"
+export GITHUB_COMMENT_FORMAT="My comment:<br/>{{.}}"
 export GITHUB_COMMENT="+1 LGTM"
 
 ./dist/bin/github-commenter
@@ -85,7 +85,7 @@ export GITHUB_COMMENT="+1 LGTM"
         -repo github-commenter \
         -type pr \
         -number 1 \
-        -format "My comment:<br>{{.}}" \
+        -format "My comment:<br/>{{.}}" \
         -comment "+1 LGTM"
 ```
 
@@ -111,7 +111,7 @@ docker run -i --rm \
         -e GITHUB_REPO=github-commenter \
         -e GITHUB_COMMENT_TYPE=pr \
         -e GITHUB_PR_ISSUE_NUMBER=1 \
-        -e GITHUB_COMMENT_FORMAT="My comment:<br>{{.}}" \
+        -e GITHUB_COMMENT_FORMAT="My comment:<br/>{{.}}" \
         -e GITHUB_COMMENT="+1 LGTM" \
         github-commenter
 ```
@@ -127,7 +127,7 @@ export GITHUB_OWNER=cloudposse
 export GITHUB_REPO=github-commenter
 export GITHUB_COMMENT_TYPE=pr
 export GITHUB_PR_ISSUE_NUMBER=1
-export GITHUB_COMMENT_FORMAT="My comment:<br>{{.}}"
+export GITHUB_COMMENT_FORMAT="My comment:<br/>{{.}}"
 export GITHUB_COMMENT="+1 LGTM"
 
 docker run -i --rm \
