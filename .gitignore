@@ -17,3 +17,6 @@
 github-commenter.iml
 dist/bin
 .build-harness
+
+.build-harness
+build-harness
