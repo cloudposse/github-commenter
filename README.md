@@ -2,7 +2,7 @@
 
 [![Cloud Posse](https://cloudposse.com/logo-300x69.svg)](https://cloudposse.com)
 
-# github-commenter [![Build Status](https://travis-ci.org/cloudposse/github-commenter.svg?branch=master)](https://travis-ci.org/cloudposse/github-commenter) [![Latest Release](https://img.shields.io/github/release/cloudposse/github-commenter.svg)](https://travis-ci.org/cloudposse/github-commenter/releases) [![Slack Community](https://slack.cloudposse.com/badge.svg)](https://slack.cloudposse.com)
+# github-commenter [![Build Status](https://travis-ci.org/cloudposse/github-commenter.svg?branch=master)](https://travis-ci.org/cloudposse/github-commenter) [![Latest Release](https://img.shields.io/github/release/cloudposse/github-commenter.svg)](https://github.com/cloudposse/github-commenter/releases/latest) [![Slack Community](https://slack.cloudposse.com/badge.svg)](https://slack.cloudposse.com)
 
 
 Command line utility for creating GitHub comments on Commits, Pull Request Reviews or Issues.

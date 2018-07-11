@@ -23,7 +23,7 @@ badges:
     url: "https://travis-ci.org/cloudposse/github-commenter"
   - name: "Latest Release"
     image: "https://img.shields.io/github/release/cloudposse/github-commenter.svg"
-    url: "https://travis-ci.org/cloudposse/github-commenter/releases"
+    url: "https://github.com/cloudposse/github-commenter/releases/latest"
   - name: "Slack Community"
     image: "https://slack.cloudposse.com/badge.svg"
     url: "https://slack.cloudposse.com"
