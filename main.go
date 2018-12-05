@@ -165,13 +165,15 @@ func main() {
 			listOptions := &github.ListOptions{}
 			comments, _, err := githubClient.Repositories.ListCommitComments(context.Background(), *owner, *repo, *sha, listOptions)
 			if err != nil {
-				log.Print("Error listing commit comments: ", err)
+				log.Println("github-commenter: Error listing commit comments: ", err)
 			} else {
 				for _, comment := range comments {
 					if r.MatchString(*comment.Body) {
 						_, err = githubClient.Repositories.DeleteComment(context.Background(), *owner, *repo, *comment.ID)
 						if err != nil {
-							log.Print("Error deleting commit comment: ", err)
+							log.Println("github-commenter: Error deleting commit comment: ", err)
+						} else {
+							log.Println("github-commenter: Deleted commit comment: ", *comment.ID)
 						}
 					}
 				}
@@ -184,7 +186,7 @@ func main() {
 			log.Fatal(err)
 		}
 
-		fmt.Println("github-commenter: created GitHub Commit comment", commitComment.ID)
+		log.Println("github-commenter: Created GitHub Commit comment", commitComment.ID)
 	} else if *commentType == "pr-review" {
 		// https://developer.github.com/v3/pulls/reviews/#create-a-pull-request-review
 		num, err := getPullRequestOrIssueNumber(*number)
@@ -208,7 +210,7 @@ func main() {
 			log.Fatal(err)
 		}
 
-		fmt.Println("github-commenter: created GitHub PR Review comment", pullRequestReview.ID)
+		log.Println("github-commenter: Created GitHub PR Review comment", pullRequestReview.ID)
 	} else if *commentType == "issue" || *commentType == "pr" {
 		// https://developer.github.com/v3/issues/comments
 		num, err := getPullRequestOrIssueNumber(*number)
@@ -236,13 +238,15 @@ func main() {
 			listOptions := &github.IssueListCommentsOptions{}
 			comments, _, err := githubClient.Issues.ListComments(context.Background(), *owner, *repo, num, listOptions)
 			if err != nil {
-				log.Print("Error listing Issue/PR comments: ", err)
+				log.Println("github-commenter: Error listing Issue/PR comments: ", err)
 			} else {
 				for _, comment := range comments {
 					if r.MatchString(*comment.Body) {
 						_, err = githubClient.Issues.DeleteComment(context.Background(), *owner, *repo, *comment.ID)
 						if err != nil {
-							log.Print("Error deleting Issue/PR comment: ", err)
+							log.Println("github-commenter: Error deleting Issue/PR comment: ", err)
+						} else {
+							log.Println("github-commenter: Deleted Issue/PR comment: ", *comment.ID)
 						}
 					}
 				}
@@ -255,7 +259,7 @@ func main() {
 			log.Fatal(err)
 		}
 
-		fmt.Println("github-commenter: created GitHub Issue comment", issueComment.ID)
+		log.Println("github-commenter: Created GitHub Issue comment", issueComment.ID)
 	} else if *commentType == "pr-file" {
 		// https://developer.github.com/v3/pulls/comments
 		num, err := getPullRequestOrIssueNumber(*number)
@@ -298,13 +302,15 @@ func main() {
 			listOptions := &github.PullRequestListCommentsOptions{}
 			comments, _, err := githubClient.PullRequests.ListComments(context.Background(), *owner, *repo, num, listOptions)
 			if err != nil {
-				log.Print("Error listing PR file comments: ", err)
+				log.Println("github-commenter: Error listing PR file comments: ", err)
 			} else {
 				for _, comment := range comments {
 					if r.MatchString(*comment.Body) {
 						_, err = githubClient.PullRequests.DeleteComment(context.Background(), *owner, *repo, *comment.ID)
 						if err != nil {
-							log.Print("Error deleting PR file comment: ", err)
+							log.Println("github-commenter: Error deleting PR file comment: ", err)
+						} else {
+							log.Println("github-commenter: Deleted PR file comment: ", *comment.ID)
 						}
 					}
 				}
@@ -317,6 +323,6 @@ func main() {
 			log.Fatal(err)
 		}
 
-		fmt.Println("github-commenter: created GitHub PR comment on file", pullRequestComment.ID)
+		log.Println("github-commenter: Created GitHub PR comment on file: ", pullRequestComment.ID)
 	}
 }
