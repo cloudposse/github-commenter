@@ -165,14 +165,14 @@ func main() {
 			listOptions := &github.ListOptions{}
 			comments, _, err := githubClient.Repositories.ListCommitComments(context.Background(), *owner, *repo, *sha, listOptions)
 			if err != nil {
-				log.Fatal(err)
-			}
-
-			for _, comment := range comments {
-				if r.MatchString(*comment.Body) {
-					_, err = githubClient.Repositories.DeleteComment(context.Background(), *owner, *repo, *comment.ID)
-					if err != nil {
-						log.Print("Error deleting commit comment", err)
+				log.Print("Error listing commit comments", err)
+			} else {
+				for _, comment := range comments {
+					if r.MatchString(*comment.Body) {
+						_, err = githubClient.Repositories.DeleteComment(context.Background(), *owner, *repo, *comment.ID)
+						if err != nil {
+							log.Print("Error deleting commit comment", err)
+						}
 					}
 				}
 			}
@@ -200,6 +200,30 @@ func main() {
 		formattedComment, err := formatComment(comment)
 		if err != nil {
 			log.Fatal(err)
+		}
+
+		// Find and delete existing comment(s) before creating the new one
+		if *deleteCommentRegex != "" {
+			r, err := regexp.Compile(*deleteCommentRegex)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			listOptions := &github.ListOptions{}
+			reviews, _, err := githubClient.PullRequests.ListReviews(context.Background(), *owner, *repo, num, listOptions)
+			if err != nil {
+				log.Print("Error listing PR reviews", err)
+			} else {
+				for _, review := range reviews {
+					if r.MatchString(*review.Body) {
+						pullRequestReviewDismissalRequest := &github.PullRequestReviewDismissalRequest{}
+						_, _, err = githubClient.PullRequests.DismissReview(context.Background(), *owner, *repo, num, *review.ID, pullRequestReviewDismissalRequest)
+						if err != nil {
+							log.Print("Error deleting PR review", err)
+						}
+					}
+				}
+			}
 		}
 
 		pullRequestReviewRequest := &github.PullRequestReviewRequest{Body: &formattedComment, Event: github.String("COMMENT")}
@@ -236,14 +260,14 @@ func main() {
 			listOptions := &github.IssueListCommentsOptions{}
 			comments, _, err := githubClient.Issues.ListComments(context.Background(), *owner, *repo, num, listOptions)
 			if err != nil {
-				log.Fatal(err)
-			}
-
-			for _, comment := range comments {
-				if r.MatchString(*comment.Body) {
-					_, err = githubClient.Issues.DeleteComment(context.Background(), *owner, *repo, *comment.ID)
-					if err != nil {
-						log.Print("Error deleting Issue/PR comment", err)
+				log.Print("Error listing Issue/PR comments", err)
+			} else {
+				for _, comment := range comments {
+					if r.MatchString(*comment.Body) {
+						_, err = githubClient.Issues.DeleteComment(context.Background(), *owner, *repo, *comment.ID)
+						if err != nil {
+							log.Print("Error deleting Issue/PR comment", err)
+						}
 					}
 				}
 			}
@@ -298,14 +322,14 @@ func main() {
 			listOptions := &github.PullRequestListCommentsOptions{}
 			comments, _, err := githubClient.PullRequests.ListComments(context.Background(), *owner, *repo, num, listOptions)
 			if err != nil {
-				log.Fatal(err)
-			}
-
-			for _, comment := range comments {
-				if r.MatchString(*comment.Body) {
-					_, err = githubClient.PullRequests.DeleteComment(context.Background(), *owner, *repo, *comment.ID)
-					if err != nil {
-						log.Print("Error deleting Issue/PR comment", err)
+				log.Print("Error listing PR file comments", err)
+			} else {
+				for _, comment := range comments {
+					if r.MatchString(*comment.Body) {
+						_, err = githubClient.PullRequests.DeleteComment(context.Background(), *owner, *repo, *comment.ID)
+						if err != nil {
+							log.Print("Error deleting PR file comment", err)
+						}
 					}
 				}
 			}
