@@ -62,7 +62,7 @@ Command-line arguments take precedence over ENV vars
 | type                  | GITHUB_COMMENT_TYPE      | Comment type: `commit`, `pr` or `issue`                                                                                    |
 | sha                   | GITHUB_COMMIT_SHA        | Commit SHA. Required when `type=commit`                                                                                    |
 | number                | GITHUB_PR_ISSUE_NUMBER   | Pull Request or Issue number. Required when `type=pr` or `type=issue`                                                      |
-| format                | GITHUB_COMMENT_FORMAT    | Comment format (optional). Supports `Go` [templates](https://golang.org/pkg/text/template): `My comment:<br/>{{.}}`         |
+| format                | GITHUB_COMMENT_FORMAT    | Comment format (optional). Supports `Go` [templates](https://golang.org/pkg/text/template): `My comment:<br/>{{.}}`        |
 | comment               | GITHUB_COMMENT           | Comment text. If neither `comment` nor `GITHUB_COMMENT` provided, will read from `stdin`                                   |
 
 
@@ -93,6 +93,7 @@ go get
 CGO_ENABLED=0 go build -v -o "./dist/bin/github-commenter" *.go
 ```
 
+
 ### Run locally with ENV vars
 [run_locally_with_env_vars.sh](examples/run_locally_with_env_vars.sh)
 
@@ -107,6 +108,7 @@ export GITHUB_COMMENT="+1 LGTM"
 
 ./dist/bin/github-commenter
 ```
+
 
 ### Run locally with command-line arguments
 [run_locally_with_command_line_args.sh](examples/run_locally_with_command_line_args.sh)
@@ -130,6 +132,7 @@ __NOTE__: it will download all `Go` dependencies and then build the program insi
 docker build --tag github-commenter  --no-cache=true .
 ```
 
+
 ### Run in a Docker container with ENV vars
 [run_docker_with_env_vars.sh](examples/run_docker_with_env_vars.sh)
 
@@ -144,6 +147,7 @@ docker run -i --rm \
         -e GITHUB_COMMENT="+1 LGTM" \
         github-commenter
 ```
+
 
 ### Run with Docker
 Run `github-commenter` in a Docker container with local ENV vars propagated into the container's environment.
@@ -168,7 +172,6 @@ docker run -i --rm \
         -e GITHUB_COMMENT \
         github-commenter
 ```
-
 
 
 ### Run with Docker using Env File
