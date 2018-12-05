@@ -28,7 +28,7 @@ var (
 	token       = flag.String("token", os.Getenv("GITHUB_TOKEN"), "Github access token")
 	owner       = flag.String("owner", os.Getenv("GITHUB_OWNER"), "Github repository owner")
 	repo        = flag.String("repo", os.Getenv("GITHUB_REPO"), "Github repository name")
-	commentType = flag.String("type", os.Getenv("GITHUB_COMMENT_TYPE"), "Comment type: 'commit', 'pr' or 'issue'")
+	commentType = flag.String("type", os.Getenv("GITHUB_COMMENT_TYPE"), "Comment type: 'commit', 'pr', 'issue', 'pr-review' or 'pr-file'")
 	sha         = flag.String("sha", os.Getenv("GITHUB_COMMIT_SHA"), "Commit SHA")
 	number      = flag.String("number", os.Getenv("GITHUB_PR_ISSUE_NUMBER"), "Pull Request or Issue number")
 	file        = flag.String("file", os.Getenv("GITHUB_PR_FILE"), "Pull Request File Name")
@@ -127,9 +127,9 @@ func main() {
 		flag.PrintDefaults()
 		log.Fatal("-type or GITHUB_COMMENT_TYPE required")
 	}
-	if *commentType != "commit" && *commentType != "pr" && *commentType != "issue" {
+	if *commentType != "commit" && *commentType != "pr" && *commentType != "issue" && *commentType != "pr-review" && *commentType != "pr-file" {
 		flag.PrintDefaults()
-		log.Fatal("-type or GITHUB_COMMENT_TYPE must be one of 'commit', 'pr' or 'issue'")
+		log.Fatal("-type or GITHUB_COMMENT_TYPE must be one of 'commit', 'pr', 'issue', 'pr-review' or 'pr-file'")
 	}
 
 	http.DefaultClient.Transport = roundTripper{*token}
