@@ -6,11 +6,19 @@
 # github-commenter [![Build Status](https://travis-ci.org/cloudposse/github-commenter.svg?branch=master)](https://travis-ci.org/cloudposse/github-commenter) [![Latest Release](https://img.shields.io/github/release/cloudposse/github-commenter.svg)](https://github.com/cloudposse/github-commenter/releases/latest) [![Slack Community](https://slack.cloudposse.com/badge.svg)](https://slack.cloudposse.com)
 
 
-Command line utility for creating GitHub comments on Commits, Pull Request Reviews or Issues.
+Command line utility for creating GitHub comments on Commits, Pull Request Reviews, Pull Request Files, Issues and Pull Requests.
 
-* <https://developer.github.com/v3/repos/comments/#create-a-commit-comment>
-* <https://developer.github.com/v3/pulls/reviews/#create-a-pull-request-review>
-* <https://developer.github.com/v3/issues/comments/#create-a-comment>
+GitHub API supports these types of comments:
+
+1. Comments on Repos/Commits (https://developer.github.com/v3/repos/comments)
+2. Comments on Pull Request Reviews (https://developer.github.com/v3/pulls/reviews/#create-a-pull-request-review)
+3. Comments on Pull Request Files (https://developer.github.com/v3/pulls/comments)
+4. Comments on Issues (https://developer.github.com/v3/issues/comments)
+5. Comments on Pull Requests (in the global section) (https://developer.github.com/v3/issues/comments)
+
+Since GitHub considers Pull Requests as Issues, #4 and #5 are basically the same and use the same API.
+
+The module supports all of these types of comments (type: `commit`, `pr-review`, `pr-file`, `issue`, `pr`).
 
 
 ---
