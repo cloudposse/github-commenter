@@ -202,31 +202,6 @@ func main() {
 			log.Fatal(err)
 		}
 
-		// Find and delete existing comment(s) before creating the new one
-		if *deleteCommentRegex != "" {
-			r, err := regexp.Compile(*deleteCommentRegex)
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			listOptions := &github.ListOptions{}
-			reviews, _, err := githubClient.PullRequests.ListReviews(context.Background(), *owner, *repo, num, listOptions)
-			if err != nil {
-				log.Print("Error listing PR reviews: ", err)
-			} else {
-				for _, review := range reviews {
-					if r.MatchString(*review.Body) {
-						pullRequestReviewDismissalRequestMessage := fmt.Sprintf("Replaced by %s", formattedComment)
-						pullRequestReviewDismissalRequest := &github.PullRequestReviewDismissalRequest{Message: &pullRequestReviewDismissalRequestMessage}
-						_, _, err = githubClient.PullRequests.DismissReview(context.Background(), *owner, *repo, num, *review.ID, pullRequestReviewDismissalRequest)
-						if err != nil {
-							log.Print("Error deleting PR review: ", err)
-						}
-					}
-				}
-			}
-		}
-
 		pullRequestReviewRequest := &github.PullRequestReviewRequest{Body: &formattedComment, Event: github.String("COMMENT")}
 		pullRequestReview, _, err := githubClient.PullRequests.CreateReview(context.Background(), *owner, *repo, num, pullRequestReviewRequest)
 		if err != nil {
