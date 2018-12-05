@@ -241,7 +241,7 @@ func main() {
 
 			for _, comment := range comments {
 				if r.MatchString(*comment.Body) {
-					_, err = githubClient.Issues.DeleteComment(context.Background(), *owner, *repo, int(*comment.ID))
+					_, err = githubClient.Issues.DeleteComment(context.Background(), *owner, *repo, *comment.ID)
 					if err != nil {
 						log.Print("Error deleting Issue/PR comment", err)
 					}
@@ -303,7 +303,7 @@ func main() {
 
 			for _, comment := range comments {
 				if r.MatchString(*comment.Body) {
-					_, err = githubClient.PullRequests.DeleteComment(context.Background(), *owner, *repo, int(*comment.ID))
+					_, err = githubClient.PullRequests.DeleteComment(context.Background(), *owner, *repo, *comment.ID)
 					if err != nil {
 						log.Print("Error deleting Issue/PR comment", err)
 					}
