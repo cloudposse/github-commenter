@@ -31,6 +31,8 @@ var (
 	commentType = flag.String("type", os.Getenv("GITHUB_COMMENT_TYPE"), "Comment type: 'commit', 'pr' or 'issue'")
 	sha         = flag.String("sha", os.Getenv("GITHUB_COMMIT_SHA"), "Commit SHA")
 	number      = flag.String("number", os.Getenv("GITHUB_PR_ISSUE_NUMBER"), "Pull Request or Issue number")
+	file        = flag.String("file", os.Getenv("GITHUB_PR_FILE"), "Pull Request File Name")
+	position    = flag.String("position", os.Getenv("GITHUB_PR_FILE_POSITION"), "Position in Pull Request File")
 	format      = flag.String("format", os.Getenv("GITHUB_COMMENT_FORMAT"), "Comment format. Supports 'Go' templates: My comment:<br/>{{.}}")
 	comment     = flag.String("comment", os.Getenv("GITHUB_COMMENT"), "Comment text")
 )
@@ -46,6 +48,19 @@ func getPullRequestOrIssueNumber(str string) (int, error) {
 	}
 
 	return num, nil
+}
+
+func getPullRequestFilePosition(str string) (int, error) {
+	if str == "" {
+		return 0, errors.New("-position or GITHUB_PR_FILE_POSITION required")
+	}
+
+	position, err := strconv.Atoi(str)
+	if err != nil {
+		return 0, errors.WithMessage(err, "-position or GITHUB_PR_FILE_POSITION must be an integer")
+	}
+
+	return position, nil
 }
 
 func getComment() (string, error) {
@@ -144,7 +159,7 @@ func main() {
 		}
 
 		fmt.Println("github-commenter: created GitHub Commit comment", commitComment.ID)
-	} else if *commentType == "pr" {
+	} else if *commentType == "pr-review" {
 		num, err := getPullRequestOrIssueNumber(*number)
 		if err != nil {
 			log.Fatal(err)
@@ -160,16 +175,15 @@ func main() {
 			log.Fatal(err)
 		}
 
-		// https://developer.github.com/v3/pulls/comments
 		// https://developer.github.com/v3/pulls/reviews/#create-a-pull-request-review
-		pullRequestReviewComment := &github.PullRequestReviewRequest{Body: &formattedComment, Event: github.String("COMMENT")}
-		pullRequestReview, _, err := githubClient.PullRequests.CreateReview(context.Background(), *owner, *repo, num, pullRequestReviewComment)
+		pullRequestReviewRequest := &github.PullRequestReviewRequest{Body: &formattedComment, Event: github.String("COMMENT")}
+		pullRequestReview, _, err := githubClient.PullRequests.CreateReview(context.Background(), *owner, *repo, num, pullRequestReviewRequest)
 		if err != nil {
 			log.Fatal(err)
 		}
 
 		fmt.Println("github-commenter: created GitHub PR Review comment", pullRequestReview.ID)
-	} else if *commentType == "issue" {
+	} else if *commentType == "issue" || *commentType == "pr" {
 		num, err := getPullRequestOrIssueNumber(*number)
 		if err != nil {
 			log.Fatal(err)
@@ -193,5 +207,44 @@ func main() {
 		}
 
 		fmt.Println("github-commenter: created GitHub Issue comment", issueComment.ID)
+	} else if *commentType == "pr-file" {
+		num, err := getPullRequestOrIssueNumber(*number)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		if *sha == "" {
+			flag.PrintDefaults()
+			log.Fatal("-sha or GITHUB_COMMIT_SHA required")
+		}
+
+		if *file == "" {
+			flag.PrintDefaults()
+			log.Fatal("-file or GITHUB_PR_FILE required")
+		}
+
+		position, err := getPullRequestFilePosition(*position)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		comment, err := getComment()
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		formattedComment, err := formatComment(comment)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		// https://developer.github.com/v3/pulls/comments
+		pullRequestComment := &github.PullRequestComment{Body: &formattedComment, Path: file, Position: &position, CommitID: sha}
+		pullRequestComment, _, err = githubClient.PullRequests.CreateComment(context.Background(), *owner, *repo, num, pullRequestComment)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		fmt.Println("github-commenter: created GitHub PR comment on file", pullRequestComment.ID)
 	}
 }
