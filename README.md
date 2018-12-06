@@ -10,13 +10,13 @@ Command line utility for creating GitHub comments on Commits, Pull Request Revie
 
 GitHub API supports these types of comments:
 
-1. Comments on Repos/Commits (https://developer.github.com/v3/repos/comments)
-2. Comments on Pull Request Reviews (https://developer.github.com/v3/pulls/reviews/#create-a-pull-request-review)
-3. Comments on Pull Request Files (https://developer.github.com/v3/pulls/comments)
-4. Comments on Issues (https://developer.github.com/v3/issues/comments)
-5. Comments on Pull Requests (in the global section) (https://developer.github.com/v3/issues/comments)
+* [Comments on Repos/Commits](https://developer.github.com/v3/repos/comments)
+* [Comments on Pull Request Reviews](https://developer.github.com/v3/pulls/reviews/#create-a-pull-request-review)
+* [Comments on Pull Request Files](https://developer.github.com/v3/pulls/comments)
+* [Comments on Issues](https://developer.github.com/v3/issues/comments)
+* [Comments on Pull Requests (in the global section)](https://developer.github.com/v3/issues/comments)
 
-Since GitHub considers Pull Requests as Issues, #4 and #5 are basically the same and use the same API.
+Since GitHub considers Pull Requests as Issues, `Comments on Issues` and `Comments on Pull Requests` use the same API.
 
 The module supports all of these types of comments (type: `commit`, `pr-review`, `pr-file`, `issue`, `pr`).
 
@@ -56,27 +56,30 @@ It's 100% Open Source and licensed under the [APACHE2](LICENSE).
 
 ## Usage
 
-__NOTE__: Create a [GitHub token](https://help.github.com/articles/creating-an-access-token-for-command-line-use) with `repo:status` and `public_repo` scopes
+__NOTE__: Create a [GitHub token](https://help.github.com/articles/creating-an-access-token-for-command-line-use) with `repo:status` and `public_repo` scopes.
 
 __NOTE__: The module accepts parameters as command-line arguments or as ENV variables (or any combination of command-line arguments and ENV vars).
-Command-line arguments take precedence over ENV vars
+Command-line arguments take precedence over ENV vars.
 
 
-| Command-line argument |  ENV var                 |  Description                                                                                                               |
-|:----------------------|:-------------------------|:---------------------------------------------------------------------------------------------------------------------------|
-| token                 | GITHUB_TOKEN             | Github access [token](https://help.github.com/articles/creating-an-access-token-for-command-line-use)                      |
-| owner                 | GITHUB_OWNER             | Github repository owner (_e.g._ `cloudposse`)                                                                              |
-| repo                  | GITHUB_REPO              | Github repository name (_e.g._ `github-commenter`)                                                                         |
-| type                  | GITHUB_COMMENT_TYPE      | Comment type: `commit`, `pr` or `issue`                                                                                    |
-| sha                   | GITHUB_COMMIT_SHA        | Commit SHA. Required when `type=commit`                                                                                    |
-| number                | GITHUB_PR_ISSUE_NUMBER   | Pull Request or Issue number. Required when `type=pr` or `type=issue`                                                      |
-| format                | GITHUB_COMMENT_FORMAT    | Comment format (optional). Supports `Go` [templates](https://golang.org/pkg/text/template): `My comment:<br/>{{.}}`        |
-| comment               | GITHUB_COMMENT           | Comment text. If neither `comment` nor `GITHUB_COMMENT` provided, will read from `stdin`                                   |
+| Command-line argument |  ENV var                     |  Description                                                                                                                                 |
+|:----------------------|:-----------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------|
+| token                 | GITHUB_TOKEN                 | Github access [token](https://help.github.com/articles/creating-an-access-token-for-command-line-use)                                        |
+| owner                 | GITHUB_OWNER                 | Github repository owner (_e.g._ `cloudposse`)                                                                                                |
+| repo                  | GITHUB_REPO                  | Github repository name (_e.g._ `github-commenter`)                                                                                           |
+| type                  | GITHUB_COMMENT_TYPE          | Comment type: `commit`, `pr`, `issue`, `pr-review` or `pr-file`                                                                              |
+| sha                   | GITHUB_COMMIT_SHA            | Commit SHA. Required when `type=commit` or `type=pr-file`                                                                                    |
+| number                | GITHUB_PR_ISSUE_NUMBER       | Pull Request or Issue number. Required for all comment types except for `commit`                                                             |
+| file                  | GITHUB_PR_FILE               | Pull Request File Name to comment on. For more info see [create comment](https://developer.github.com/v3/pulls/comments/#create-a-comment)   |
+| position              | GITHUB_PR_FILE_POSITION      | Position in Pull Request File. For more info see [create comment](https://developer.github.com/v3/pulls/comments/#create-a-comment)          |
+| format                | GITHUB_COMMENT_FORMAT        | Comment format (optional). Supports `Go` [templates](https://golang.org/pkg/text/template). _E.g._ `My comment:<br/>{{.}}`                   |
+| comment               | GITHUB_COMMENT               | Comment text. If neither `comment` nor `GITHUB_COMMENT` provided, will read from `stdin`                                                     |
+| delete-comment-regex  | GITHUB_DELETE_COMMENT_REGEX  | Regex to find previous comments to delete before creating the new comment. Supported for comment types `commit`, `pr-file`, `issue` and `pr` |
 
 
 __NOTE__: The module accepts the text of the comment from the command-line argument `comment`, from the ENV variable `GITHUB_COMMENT`, or from the standard input.
 Command-line argument takes precedence over ENV var, and ENV var takes precedence over standard input.
-Accepting comments from `stdin` allows using Unix pipes to send the output from another program as the input to the module
+Accepting comments from `stdin` allows using Unix pipes to send the output from another program as the input to the module:
 
 ```sh
     cat comment.txt | github-commenter ...
@@ -188,6 +191,71 @@ Run the `github-commenter` in a Docker container with ENV vars declared in a fil
 
 ```sh
 docker run -i --rm --env-file ./example.env github-commenter
+```
+
+
+### `delete-comment-regex` example 1
+Delete all previous comments on Pull Request #2 that contain the string `test1` in the body of the comments and create a new PR comment
+
+```sh
+./dist/bin/github-commenter \
+        -token XXXXXXXXXXXXXXXX \
+        -owner cloudposse \
+        -repo github-commenter \
+        -type pr \
+        -number 2 \
+        -format "{{.}}" \
+        -delete-comment-regex "test1" \
+        -comment "New Pull Request comment"
+```
+
+### `delete-comment-regex` example 2
+Delete all previous comments on Issue #1 that contain the string `test2` at the end of the comment's body and create a new Issue comment
+
+```sh
+./dist/bin/github-commenter \
+        -token XXXXXXXXXXXXXXXX \
+        -owner cloudposse \
+        -repo github-commenter \
+        -type issue \
+        -number 1 \
+        -format "{{.}}" \
+        -delete-comment-regex "test2$" \
+        -comment "New Issue comment"
+```
+
+### `delete-comment-regex` example 3
+Delete all previous commit comments that contain the string `test3` in the body and create a new commit comment
+
+```sh
+./dist/bin/github-commenter \
+        -token XXXXXXXXXXXXXXXX \
+        -owner cloudposse \
+        -repo github-commenter \
+        -type commit \
+        -sha xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx \
+        -format "{{.}}" \
+        -delete-comment-regex "test3" \
+        -comment "New commit comment"
+```
+
+
+### `delete-comment-regex` example 4
+Delete all previous comments on a Pull Request file `doc.txt` that contain the string `test4` in the body of the comments and create a new comment on the file
+
+```sh
+./dist/bin/github-commenter \
+        -token XXXXXXXXXXXXXXXX \
+        -owner cloudposse \
+        -repo github-commenter \
+        -type pr-file \
+        -sha xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx \
+        -number 2 \
+        -file doc.txt \
+        -position 1 \
+        -format "{{.}}" \
+        -delete-comment-regex "test4" \
+        -comment "New comment on the PR file"
 ```
 
 
