@@ -181,7 +181,7 @@ export GITHUB_REPO=github-commenter
 export GITHUB_COMMENT_TYPE=pr
 export GITHUB_PR_ISSUE_NUMBER=1
 export GITHUB_COMMENT_FORMAT="Helm diff:<br><br><pre>{{regexReplaceAllLiteral `\\n` . `<br>` }}<pre>"
-export GITHUB_COMMENT="+1 LGTM"
+export GITHUB_COMMENT="Helm diff comment"
 
 docker run -i --rm \
         -e GITHUB_TOKEN \
