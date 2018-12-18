@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"flag"
 	"fmt"
+	"github.com/Masterminds/sprig"
 	"github.com/google/go-github/github"
 	"github.com/pkg/errors"
 	"golang.org/x/net/context"
@@ -95,7 +96,7 @@ func formatComment(comment string) (string, error) {
 		return comment, nil
 	}
 
-	t, err := template.New("formatComment").Parse(*format)
+	t, err := template.New("formatComment").Funcs(sprig.TxtFuncMap()).Parse(*format)
 	if err != nil {
 		return "", err
 	}

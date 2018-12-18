@@ -89,6 +89,16 @@ Accepting comments from `stdin` allows using Unix pipes to send the output from 
     terraform plan 2>&1 | github-commenter -format "Output from `terraform plan`<br/>```{{.}}```"
 ```
 
+__NOTE__: The module supports [sprig functions](http://masterminds.github.io/sprig/) in `Go` templates, allowing to use string replacement and Regular Expressions in the `format` argument.
+
+See [string functions](http://masterminds.github.io/sprig/strings.html) for more details.
+
+For example:
+
+```sh
+GITHUB_COMMENT_FORMAT="Helm diff:<br><br><pre>{{regexReplaceAllLiteral `\\n` . `<br>` }}<pre>"
+```
+
 
 
 
@@ -170,7 +180,7 @@ export GITHUB_OWNER=cloudposse
 export GITHUB_REPO=github-commenter
 export GITHUB_COMMENT_TYPE=pr
 export GITHUB_PR_ISSUE_NUMBER=1
-export GITHUB_COMMENT_FORMAT="My comment:<br/>{{.}}"
+export GITHUB_COMMENT_FORMAT="Helm diff:<br><br><pre>{{regexReplaceAllLiteral `\\n` . `<br>` }}<pre>"
 export GITHUB_COMMENT="+1 LGTM"
 
 docker run -i --rm \
