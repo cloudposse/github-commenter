@@ -2,3 +2,4 @@ package: github.com/cloudposse/github-commenter
 import:
   - package: github.com/google/go-github/github
   - package: golang.org/x/net/context
+  - package: github.com/Masterminds/sprig
