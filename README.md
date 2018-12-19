@@ -18,7 +18,7 @@ GitHub API supports these types of comments:
 
 Since GitHub considers Pull Requests as Issues, `Comments on Issues` and `Comments on Pull Requests` use the same API.
 
-The module supports all of these types of comments (type: `commit`, `pr-review`, `pr-file`, `issue`, `pr`).
+The utility supports all these types of comments (`commit`, `pr-review`, `pr-file`, `issue`, `pr`).
 
 
 ---
@@ -58,7 +58,7 @@ It's 100% Open Source and licensed under the [APACHE2](LICENSE).
 
 __NOTE__: Create a [GitHub token](https://help.github.com/articles/creating-an-access-token-for-command-line-use) with `repo:status` and `public_repo` scopes.
 
-__NOTE__: The module accepts parameters as command-line arguments or as ENV variables (or any combination of command-line arguments and ENV vars).
+__NOTE__: The utility accepts parameters as command-line arguments or as ENV variables (or any combination of command-line arguments and ENV vars).
 Command-line arguments take precedence over ENV vars.
 
 
@@ -77,9 +77,9 @@ Command-line arguments take precedence over ENV vars.
 | delete-comment-regex  | GITHUB_DELETE_COMMENT_REGEX  | Regex to find previous comments to delete before creating the new comment. Supported for comment types `commit`, `pr-file`, `issue` and `pr` |
 
 
-__NOTE__: The module accepts the text of the comment from the command-line argument `comment`, from the ENV variable `GITHUB_COMMENT`, or from the standard input.
+__NOTE__: The utility accepts the text of the comment from the command-line argument `comment`, from the ENV variable `GITHUB_COMMENT`, or from the standard input.
 Command-line argument takes precedence over ENV var, and ENV var takes precedence over standard input.
-Accepting comments from `stdin` allows using Unix pipes to send the output from another program as the input to the module:
+Accepting comments from `stdin` allows using Unix pipes to send the output from another program as the input to the tool:
 
 ```sh
     cat comment.txt | github-commenter ...
@@ -89,7 +89,7 @@ Accepting comments from `stdin` allows using Unix pipes to send the output from 
     terraform plan 2>&1 | github-commenter -format "Output from `terraform plan`<br/>```{{.}}```"
 ```
 
-__NOTE__: The module supports [sprig functions](http://masterminds.github.io/sprig/) in `Go` templates, allowing to use string replacement and Regular Expressions in the `format` argument.
+__NOTE__: The utility supports [sprig functions](http://masterminds.github.io/sprig/) in `Go` templates, allowing to use string replacement and Regular Expressions in the `format` argument.
 
 See [string functions](http://masterminds.github.io/sprig/strings.html) for more details.
 
@@ -104,7 +104,7 @@ GITHUB_COMMENT_FORMAT="Helm diff:<br><br><pre>{{regexReplaceAllLiteral `\\n` . `
 
 ## Examples
 
-The module can be called directly or as a Docker container.
+The utility can be called directly or as a Docker container.
 
 ### Build the Go program locally
 
