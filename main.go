@@ -35,9 +35,10 @@ var (
 	number             = flag.String("number", os.Getenv("GITHUB_PR_ISSUE_NUMBER"), "Pull Request or Issue number")
 	file               = flag.String("file", os.Getenv("GITHUB_PR_FILE"), "Pull Request File Name")
 	position           = flag.String("position", os.Getenv("GITHUB_PR_FILE_POSITION"), "Position in Pull Request File")
-	format             = flag.String("format", os.Getenv("GITHUB_COMMENT_FORMAT"), "Comment format. Supports 'Go' templates: My comment:<br/>{{.}}")
+	format             = flag.String("format", os.Getenv("GITHUB_COMMENT_FORMAT"), "Comment format. Supports 'Go' templates: My comment:<br/>{{.}}. Use either `format` or `format_file`")
 	comment            = flag.String("comment", os.Getenv("GITHUB_COMMENT"), "Comment text")
 	deleteCommentRegex = flag.String("delete-comment-regex", os.Getenv("GITHUB_DELETE_COMMENT_REGEX"), "Regex to find previous comments to delete before creating the new comment. Supported for comment types `commit`, `pr-file`, `issue` and `pr`")
+	formatFile         = flag.String("format_file", os.Getenv("GITHUB_COMMENT_FORMAT_FILE"), "The path to a template file to format comment. Supports 'Go' templates. Use either `format` or `format_file`")
 )
 
 func getPullRequestOrIssueNumber(str string) (int, error) {
@@ -92,13 +93,25 @@ func getComment() (string, error) {
 }
 
 func formatComment(comment string) (string, error) {
-	if *format == "" {
+	if *format == "" || *formatFile == "" {
 		return comment, nil
 	}
 
-	t, err := template.New("formatComment").Funcs(sprig.TxtFuncMap()).Parse(*format)
-	if err != nil {
-		return "", err
+	var t *template.Template
+	var err error
+
+	if *format != "" {
+		t = template.New("formatComment").Funcs(sprig.TxtFuncMap())
+		t, err = t.Parse(*format)
+		if err != nil {
+			return "", err
+		}
+	} else {
+		t = template.New("formatComment").Funcs(sprig.TxtFuncMap())
+		t, err = t.ParseFiles(*formatFile)
+		if err != nil {
+			return "", err
+		}
 	}
 
 	var doc bytes.Buffer
