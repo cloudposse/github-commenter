@@ -35,12 +35,12 @@ var (
 	number             = flag.String("number", os.Getenv("GITHUB_PR_ISSUE_NUMBER"), "Pull Request or Issue number")
 	file               = flag.String("file", os.Getenv("GITHUB_PR_FILE"), "Pull Request File Name")
 	position           = flag.String("position", os.Getenv("GITHUB_PR_FILE_POSITION"), "Position in Pull Request File")
-	format             = flag.String("format", os.Getenv("GITHUB_COMMENT_FORMAT"), "Comment format template. Supports `Go` templates: My comment:<br/>{{.}}. Use either `format` or `format_file`")
-	formatFile         = flag.String("format_file", os.Getenv("GITHUB_COMMENT_FORMAT_FILE"), "The path to a template file to format comment. Supports `Go` templates. Use either `format` or `format_file`")
+	templ              = flag.String("template", os.Getenv("GITHUB_COMMENT_TEMPLATE"), "Template to format comment. Supports `Go` templates: My comment:<br/>{{.}}. Use either `template` or `template_file`")
+	templateFile       = flag.String("template_file", os.Getenv("GITHUB_COMMENT_TEMPLATE_FILE"), "The path to a template file to format comment. Supports `Go` templates. Use either `template` or `template_file`")
+	format             = flag.String("format", os.Getenv("GITHUB_COMMENT_FORMAT"), "Alias of `template`")
+	formatFile         = flag.String("format_file", os.Getenv("GITHUB_COMMENT_FORMAT_FILE"), "Alias of `template_file`")
 	comment            = flag.String("comment", os.Getenv("GITHUB_COMMENT"), "Comment text")
 	deleteCommentRegex = flag.String("delete-comment-regex", os.Getenv("GITHUB_DELETE_COMMENT_REGEX"), "Regex to find previous comments to delete before creating the new comment. Supported for comment types `commit`, `pr-file`, `issue` and `pr`")
-	templ              = flag.String("template", os.Getenv("GITHUB_COMMENT_TEMPLATE"), "Comment format template. This is an alias to `format`. Supports `Go` templates: My comment:<br/>{{.}}. Use either `template` or `template_file`")
-	templateFile       = flag.String("template_file", os.Getenv("GITHUB_COMMENT_TEMPLATE_FILE"), "The path to a template file to format comment. This is an alias to `format_file`. Supports `Go` templates. Use either `template` or `template_file`")
 )
 
 func getPullRequestOrIssueNumber(str string) (int, error) {
