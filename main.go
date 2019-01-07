@@ -35,7 +35,10 @@ var (
 	number             = flag.String("number", os.Getenv("GITHUB_PR_ISSUE_NUMBER"), "Pull Request or Issue number")
 	file               = flag.String("file", os.Getenv("GITHUB_PR_FILE"), "Pull Request File Name")
 	position           = flag.String("position", os.Getenv("GITHUB_PR_FILE_POSITION"), "Position in Pull Request File")
-	format             = flag.String("format", os.Getenv("GITHUB_COMMENT_FORMAT"), "Comment format. Supports 'Go' templates: My comment:<br/>{{.}}")
+	templ              = flag.String("template", os.Getenv("GITHUB_COMMENT_TEMPLATE"), "Template to format comment. Supports `Go` templates: My comment:<br/>{{.}}. Use either `template` or `template_file`")
+	templateFile       = flag.String("template_file", os.Getenv("GITHUB_COMMENT_TEMPLATE_FILE"), "The path to a template file to format comment. Supports `Go` templates. Use either `template` or `template_file`")
+	format             = flag.String("format", os.Getenv("GITHUB_COMMENT_FORMAT"), "Alias of `template`")
+	formatFile         = flag.String("format_file", os.Getenv("GITHUB_COMMENT_FORMAT_FILE"), "Alias of `template_file`")
 	comment            = flag.String("comment", os.Getenv("GITHUB_COMMENT"), "Comment text")
 	deleteCommentRegex = flag.String("delete-comment-regex", os.Getenv("GITHUB_DELETE_COMMENT_REGEX"), "Regex to find previous comments to delete before creating the new comment. Supported for comment types `commit`, `pr-file`, `issue` and `pr`")
 )
@@ -92,13 +95,37 @@ func getComment() (string, error) {
 }
 
 func formatComment(comment string) (string, error) {
-	if *format == "" {
+	if *format == "" && *formatFile == "" && *templ == "" && *templateFile == "" {
 		return comment, nil
 	}
 
-	t, err := template.New("formatComment").Funcs(sprig.TxtFuncMap()).Parse(*format)
-	if err != nil {
-		return "", err
+	var t *template.Template
+	var err error
+	var templateFinal string
+	var templateFileFinal string
+
+	if *format != "" || *templ != "" {
+		t = template.New("formatComment").Funcs(sprig.TxtFuncMap())
+		if *templ != "" {
+			templateFinal = *templ
+		} else {
+			templateFinal = *format
+		}
+		t, err = t.Parse(templateFinal)
+		if err != nil {
+			return "", err
+		}
+	} else {
+		t = template.New("formatComment").Funcs(sprig.TxtFuncMap())
+		if *templateFile != "" {
+			templateFileFinal = *templateFile
+		} else {
+			templateFileFinal = *formatFile
+		}
+		t, err = t.ParseFiles(templateFileFinal)
+		if err != nil {
+			return "", err
+		}
 	}
 
 	var doc bytes.Buffer

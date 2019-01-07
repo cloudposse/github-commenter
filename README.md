@@ -62,19 +62,22 @@ __NOTE__: The utility accepts parameters as command-line arguments or as ENV var
 Command-line arguments take precedence over ENV vars.
 
 
-| Command-line argument |  ENV var                     |  Description                                                                                                                                 |
-|:----------------------|:-----------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------|
-| token                 | GITHUB_TOKEN                 | Github access [token](https://help.github.com/articles/creating-an-access-token-for-command-line-use)                                        |
-| owner                 | GITHUB_OWNER                 | Github repository owner (_e.g._ `cloudposse`)                                                                                                |
-| repo                  | GITHUB_REPO                  | Github repository name (_e.g._ `github-commenter`)                                                                                           |
-| type                  | GITHUB_COMMENT_TYPE          | Comment type: `commit`, `pr`, `issue`, `pr-review` or `pr-file`                                                                              |
-| sha                   | GITHUB_COMMIT_SHA            | Commit SHA. Required when `type=commit` or `type=pr-file`                                                                                    |
-| number                | GITHUB_PR_ISSUE_NUMBER       | Pull Request or Issue number. Required for all comment types except for `commit`                                                             |
-| file                  | GITHUB_PR_FILE               | Pull Request File Name to comment on. For more info see [create comment](https://developer.github.com/v3/pulls/comments/#create-a-comment)   |
-| position              | GITHUB_PR_FILE_POSITION      | Position in Pull Request File. For more info see [create comment](https://developer.github.com/v3/pulls/comments/#create-a-comment)          |
-| format                | GITHUB_COMMENT_FORMAT        | Comment format (optional). Supports `Go` [templates](https://golang.org/pkg/text/template). _E.g._ `My comment:<br/>{{.}}`                   |
-| comment               | GITHUB_COMMENT               | Comment text. If neither `comment` nor `GITHUB_COMMENT` provided, will read from `stdin`                                                     |
-| delete-comment-regex  | GITHUB_DELETE_COMMENT_REGEX  | Regex to find previous comments to delete before creating the new comment. Supported for comment types `commit`, `pr-file`, `issue` and `pr` |
+| Command-line argument |  ENV var                     |  Description                                                                                                                                                                      |
+|:----------------------|:-----------------------------|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| token                 | GITHUB_TOKEN                 | Github access [token](https://help.github.com/articles/creating-an-access-token-for-command-line-use)                                                                             |
+| owner                 | GITHUB_OWNER                 | Github repository owner (_e.g._ `cloudposse`)                                                                                                                                     |
+| repo                  | GITHUB_REPO                  | Github repository name (_e.g._ `github-commenter`)                                                                                                                                |
+| type                  | GITHUB_COMMENT_TYPE          | Comment type: `commit`, `pr`, `issue`, `pr-review` or `pr-file`                                                                                                                   |
+| sha                   | GITHUB_COMMIT_SHA            | Commit SHA. Required when `type=commit` or `type=pr-file`                                                                                                                         |
+| number                | GITHUB_PR_ISSUE_NUMBER       | Pull Request or Issue number. Required for all comment types except for `commit`                                                                                                  |
+| file                  | GITHUB_PR_FILE               | Pull Request File Name to comment on. For more info see [create comment](https://developer.github.com/v3/pulls/comments/#create-a-comment)                                        |
+| position              | GITHUB_PR_FILE_POSITION      | Position in Pull Request File. For more info see [create comment](https://developer.github.com/v3/pulls/comments/#create-a-comment)                                               |
+| template              | GITHUB_COMMENT_TEMPLATE      | Template to format comment (optional). Supports `Go` [templates](https://golang.org/pkg/text/template). _E.g._ `My comment:<br/>{{.}}`. Use either `template` or `template_file`  |
+| template_file         | GITHUB_COMMENT_TEMPLATE_FILE | The path to a template file to format comment (optional). Supports `Go` templates. Use either `template` or `template_file`                                                       |
+| format                | GITHUB_COMMENT_FORMAT        | Alias of `template`                                                                                                                                                               |
+| format_file           | GITHUB_COMMENT_FORMAT_FILE   | Alias of `template_file`                                                                                                                                                          |
+| comment               | GITHUB_COMMENT               | Comment text. If neither `comment` nor `GITHUB_COMMENT` provided, will read from `stdin`                                                                                          |
+| delete-comment-regex  | GITHUB_DELETE_COMMENT_REGEX  | Regex to find previous comments to delete before creating the new comment. Supported for comment types `commit`, `pr-file`, `issue` and `pr`                                      |
 
 
 __NOTE__: The utility accepts the text of the comment from the command-line argument `comment`, from the ENV variable `GITHUB_COMMENT`, or from the standard input.
@@ -346,7 +349,7 @@ In general, PRs are welcome. We follow the typical "fork-and-pull" Git workflow.
 
 ## Copyright
 
-Copyright © 2017-2018 [Cloud Posse, LLC](https://cpco.io/copyright)
+Copyright © 2017-2019 [Cloud Posse, LLC](https://cpco.io/copyright)
 
 
 
