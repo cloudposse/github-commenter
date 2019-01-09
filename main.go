@@ -12,6 +12,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path"
 	"regexp"
 	"strconv"
 	"text/template"
@@ -105,23 +106,24 @@ func formatComment(comment string) (string, error) {
 	var templateFileFinal string
 
 	if *format != "" || *templ != "" {
-		t = template.New("formatComment").Funcs(sprig.TxtFuncMap())
 		if *templ != "" {
 			templateFinal = *templ
 		} else {
 			templateFinal = *format
 		}
+		t = template.New("formatComment").Funcs(sprig.TxtFuncMap())
 		t, err = t.Parse(templateFinal)
 		if err != nil {
 			return "", err
 		}
 	} else {
-		t = template.New("formatComment").Funcs(sprig.TxtFuncMap())
 		if *templateFile != "" {
 			templateFileFinal = *templateFile
 		} else {
 			templateFileFinal = *formatFile
 		}
+		name := path.Base(templateFileFinal)
+		t = template.New(name).Funcs(sprig.TxtFuncMap())
 		t, err = t.ParseFiles(templateFileFinal)
 		if err != nil {
 			return "", err
