@@ -76,20 +76,10 @@ func getComment() (string, error) {
 		return *comment, nil
 	}
 
-	// If not provided in the command-line argument or ENV var, try to read from Stdin
-	info, err := os.Stdin.Stat()
-	if err != nil {
-		return "", err
-	}
-
-	// Makes sure we have an input pipe, and it actually contains some bytes
-	if info.Mode()&os.ModeCharDevice != 0 || info.Size() <= 0 {
-		return "", errors.New("Comment must be provided either as command-line argument, ENV variable, or from 'Stdin'")
-	}
-
+	// Read from stdin
 	data, err := ioutil.ReadAll(os.Stdin)
 	if err != nil {
-		return "", err
+		return "", errors.WithMessage(err, "Comment must be provided either as command-line argument, ENV variable, or from 'stdin'")
 	}
 
 	return string(data), nil
@@ -137,7 +127,11 @@ func formatComment(comment string) (string, error) {
 		return "", err
 	}
 
-	return doc.String(), nil
+	// Remove ANSI escape codes
+	const ansi = "[\u001B\u009B][[\\]()#;?]*(?:(?:(?:[a-zA-Z\\d]*(?:;[a-zA-Z\\d]*)*)?\u0007)|(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PRZcf-ntqry=><~]))"
+	var re = regexp.MustCompile(ansi)
+	var s = doc.String()
+	return re.ReplaceAllString(s, ""), nil
 }
 
 func main() {
