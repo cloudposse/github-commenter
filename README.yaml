@@ -19,8 +19,11 @@ github_repo: cloudposse/github-commenter
 # Badges to display
 badges:
   - name: "Build Status"
-    image: "https://travis-ci.org/cloudposse/github-commenter.svg?branch=master"
-    url: "https://travis-ci.org/cloudposse/github-commenter"
+    image: "https://github.com/cloudposse/github-commenter/workflows/go/badge.svg?branch=master"
+    url: "https://github.com/cloudposse/github-commenter/actions"
+  - name: "Docker Status"
+    image: "https://github.com/cloudposse/github-commenter/workflows/docker/badge.svg?branch=master"
+    url: "https://github.com/cloudposse/github-commenter/actions"
   - name: "Latest Release"
     image: "https://img.shields.io/github/release/cloudposse/github-commenter.svg"
     url: "https://github.com/cloudposse/github-commenter/releases/latest"
