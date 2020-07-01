@@ -13,10 +13,10 @@ jobs:
     steps:
       # Checkout the repo
       - name: 'Checkout'
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
       # Build Go binaries
       - name: 'Build Go binaries'
-        uses: cloudposse/actions/go/build@0.7.0
+        uses: cloudposse/actions/go/build@0.15.0
         env:
           GO111MODULE: on
           # Architectures to build for
@@ -37,12 +37,17 @@ jobs:
             freebsd/386
             openbsd/386
             openbsd/amd64
-          OUTPUT_PATH: ${{ github.workspace }}/release/${{ github.event.repository.name }}_*
-
+          OUTPUT_PATH: ${{ github.workspace }}/release/${{ github.event.repository.name }}_
+      # Upload artifacts for this build
+      - name: 'Upload artifacts'
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ github.event.repository.name }}
+          path: ${{ github.workspace }}/release/*
       # Attach Go binaries to GitHub Release
       - name: 'Attach artifacts to GitHub Release'
         if: ${{ github.event_name == 'release' }}
-        uses: cloudposse/actions/github/release-assets@0.7.0
+        uses: cloudposse/actions/github/release-assets@0.15.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           INPUT_PATH: ${{ github.workspace }}/release/${{ github.event.repository.name }}_*
