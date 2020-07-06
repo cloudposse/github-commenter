@@ -119,6 +119,9 @@ Command-line arguments take precedence over ENV vars.
 | format_file           | GITHUB_COMMENT_FORMAT_FILE   | Alias of `template_file`                                                                                                                                                          |
 | comment               | GITHUB_COMMENT               | Comment text. If neither `comment` nor `GITHUB_COMMENT` provided, will read from `stdin`                                                                                          |
 | delete-comment-regex  | GITHUB_DELETE_COMMENT_REGEX  | Regex to find previous comments to delete before creating the new comment. Supported for comment types `commit`, `pr-file`, `issue` and `pr`                                      |
+| baseURL               | GITHUB_BASE_URL              | Github Enterprise URL. _E.g._ `https://github.example.com/api/v3`                                                                                                                 |
+| uploadURL             | GITHUB_UPLOAD_URL            | Github Enterprise Upload URL to pass to the Github client                                                                                                                         |
+| insecure              | GITHUB_INSECURE              | Boolean to ignore SSL certificate check                                                                                                                                           | 
 
 
 __NOTE__: The utility accepts the text of the comment from the command-line argument `comment`, from the ENV variable `GITHUB_COMMENT`, or from the standard input.
