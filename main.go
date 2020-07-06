@@ -231,7 +231,7 @@ func main() {
 			log.Fatal(err)
 		}
 
-		log.Println("github-commenter: Created GitHub Commit comment", commitComment.ID)
+		log.Println("github-commenter: Created GitHub Commit comment", *commitComment.ID)
 	} else if *commentType == "pr-review" {
 		// https://developer.github.com/v3/pulls/reviews/#create-a-pull-request-review
 		num, err := getPullRequestOrIssueNumber(*number)
@@ -255,7 +255,7 @@ func main() {
 			log.Fatal(err)
 		}
 
-		log.Println("github-commenter: Created GitHub PR Review comment", pullRequestReview.ID)
+		log.Println("github-commenter: Created GitHub PR Review comment", *pullRequestReview.ID)
 	} else if *commentType == "issue" || *commentType == "pr" {
 		// https://developer.github.com/v3/issues/comments
 		num, err := getPullRequestOrIssueNumber(*number)
@@ -304,7 +304,7 @@ func main() {
 			log.Fatal(err)
 		}
 
-		log.Println("github-commenter: Created GitHub Issue comment", issueComment.ID)
+		log.Println("github-commenter: Created GitHub Issue comment", *issueComment.ID)
 	} else if *commentType == "pr-file" {
 		// https://developer.github.com/v3/pulls/comments
 		num, err := getPullRequestOrIssueNumber(*number)
@@ -368,6 +368,6 @@ func main() {
 			log.Fatal(err)
 		}
 
-		log.Println("github-commenter: Created GitHub PR comment on file: ", pullRequestComment.ID)
+		log.Println("github-commenter: Created GitHub PR comment on file: ", *pullRequestComment.ID)
 	}
 }
