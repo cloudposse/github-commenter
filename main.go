@@ -2,12 +2,9 @@ package main
 
 import (
 	"bytes"
+	"crypto/tls"
 	"flag"
 	"fmt"
-	"github.com/Masterminds/sprig"
-	"github.com/google/go-github/github"
-	"github.com/pkg/errors"
-	"golang.org/x/net/context"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -15,16 +12,24 @@ import (
 	"path"
 	"regexp"
 	"strconv"
+	"strings"
 	"text/template"
+
+	"github.com/Masterminds/sprig"
+	"github.com/google/go-github/github"
+	"github.com/pkg/errors"
+	"golang.org/x/net/context"
 )
 
 type roundTripper struct {
 	accessToken string
+	insecure    bool
 }
 
 func (rt roundTripper) RoundTrip(r *http.Request) (*http.Response, error) {
 	r.Header.Set("Authorization", fmt.Sprintf("token %s", rt.accessToken))
-	return http.DefaultTransport.RoundTrip(r)
+	transport := http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: rt.insecure}}
+	return transport.RoundTrip(r)
 }
 
 var (
@@ -42,6 +47,9 @@ var (
 	formatFile         = flag.String("format_file", os.Getenv("GITHUB_COMMENT_FORMAT_FILE"), "Alias of `template_file`")
 	comment            = flag.String("comment", os.Getenv("GITHUB_COMMENT"), "Comment text")
 	deleteCommentRegex = flag.String("delete-comment-regex", os.Getenv("GITHUB_DELETE_COMMENT_REGEX"), "Regex to find previous comments to delete before creating the new comment. Supported for comment types `commit`, `pr-file`, `issue` and `pr`")
+	baseURL            = flag.String("baseURL", os.Getenv("GITHUB_BASE_URL"), "Base URL of github enterprise")
+	uploadURL          = flag.String("uploadURL", os.Getenv("GITHUB_UPLOAD_URL"), "Upload URL of github enterprise")
+	insecure           = flag.Bool("insecure", strings.ToLower(os.Getenv("GITHUB_INSECURE")) == "true", "Ignore SSL certificate check")
 )
 
 func getPullRequestOrIssueNumber(str string) (int, error) {
@@ -158,8 +166,21 @@ func main() {
 		log.Fatal("-type or GITHUB_COMMENT_TYPE must be one of 'commit', 'pr', 'issue', 'pr-review' or 'pr-file'")
 	}
 
-	http.DefaultClient.Transport = roundTripper{*token}
-	githubClient := github.NewClient(http.DefaultClient)
+	http.DefaultClient.Transport = roundTripper{*token, *insecure}
+	var githubClient *github.Client
+	if *baseURL != "" || *uploadURL != "" {
+		if *baseURL == "" {
+			flag.PrintDefaults()
+			log.Fatal("-baseURL or GITHUB_BASE_URL required when using -uploadURL or GITHUB_UPLOAD_URL")
+		}
+		if *uploadURL == "" {
+			flag.PrintDefaults()
+			log.Fatal("-uploadURL or GITHUB_UPLOAD_URL required when using -baseURL or GITHUB_BASE_URL")
+		}
+		githubClient, _ = github.NewEnterpriseClient(*baseURL, *uploadURL, http.DefaultClient)
+	} else {
+		githubClient = github.NewClient(http.DefaultClient)
+	}
 
 	// https://developer.github.com/v3/guides/working-with-comments
 	// https://developer.github.com/v3/repos/comments
@@ -210,7 +231,7 @@ func main() {
 			log.Fatal(err)
 		}
 
-		log.Println("github-commenter: Created GitHub Commit comment", commitComment.ID)
+		log.Println("github-commenter: Created GitHub Commit comment", *commitComment.ID)
 	} else if *commentType == "pr-review" {
 		// https://developer.github.com/v3/pulls/reviews/#create-a-pull-request-review
 		num, err := getPullRequestOrIssueNumber(*number)
@@ -234,7 +255,7 @@ func main() {
 			log.Fatal(err)
 		}
 
-		log.Println("github-commenter: Created GitHub PR Review comment", pullRequestReview.ID)
+		log.Println("github-commenter: Created GitHub PR Review comment", *pullRequestReview.ID)
 	} else if *commentType == "issue" || *commentType == "pr" {
 		// https://developer.github.com/v3/issues/comments
 		num, err := getPullRequestOrIssueNumber(*number)
@@ -283,7 +304,7 @@ func main() {
 			log.Fatal(err)
 		}
 
-		log.Println("github-commenter: Created GitHub Issue comment", issueComment.ID)
+		log.Println("github-commenter: Created GitHub Issue comment", *issueComment.ID)
 	} else if *commentType == "pr-file" {
 		// https://developer.github.com/v3/pulls/comments
 		num, err := getPullRequestOrIssueNumber(*number)
@@ -347,6 +368,6 @@ func main() {
 			log.Fatal(err)
 		}
 
-		log.Println("github-commenter: Created GitHub PR comment on file: ", pullRequestComment.ID)
+		log.Println("github-commenter: Created GitHub PR comment on file: ", *pullRequestComment.ID)
 	}
 }
