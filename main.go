@@ -28,7 +28,11 @@ type roundTripper struct {
 
 func (rt roundTripper) RoundTrip(r *http.Request) (*http.Response, error) {
 	r.Header.Set("Authorization", fmt.Sprintf("token %s", rt.accessToken))
-	transport := http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: rt.insecure}}
+
+	transport := http.Transport{
+		Proxy: http.ProxyFromEnvironment,
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: rt.insecure},
+	}
 	return transport.RoundTrip(r)
 }
 
