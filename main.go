@@ -47,6 +47,7 @@ var (
 	formatFile         = flag.String("format_file", os.Getenv("GITHUB_COMMENT_FORMAT_FILE"), "Alias of `template_file`")
 	comment            = flag.String("comment", os.Getenv("GITHUB_COMMENT"), "Comment text")
 	deleteCommentRegex = flag.String("delete-comment-regex", os.Getenv("GITHUB_DELETE_COMMENT_REGEX"), "Regex to find previous comments to delete before creating the new comment. Supported for comment types `commit`, `pr-file`, `issue` and `pr`")
+	editCommentRegex   = flag.String("edit-comment-regex", os.Getenv("GITHUB_EDIT_COMMENT_REGEX"), "Regex to find previous comments to replace with new content. Supported for comment types `commit`, `pr-file`, `issue` and `pr`")
 	baseURL            = flag.String("baseURL", os.Getenv("GITHUB_BASE_URL"), "Base URL of github enterprise")
 	uploadURL          = flag.String("uploadURL", os.Getenv("GITHUB_UPLOAD_URL"), "Upload URL of github enterprise")
 	insecure           = flag.Bool("insecure", strings.ToLower(os.Getenv("GITHUB_INSECURE")) == "true", "Ignore SSL certificate check")
@@ -224,6 +225,19 @@ func main() {
 				}
 			}
 		}
+
+		// Find and update existing comment with new content
+		/*
+			if *editCommentRegex != "" {
+				r, err := regexp.Compile(*editCommentRegex)
+				if err != nil {
+					log.Fatal(err)
+				}
+			}
+		*/
+		// if editCommentRegex
+		// listcommits
+		// if found commit, try to Edit (update)  https://pkg.go.dev/github.com/google/go-github/v34/github#RepositoriesService.UpdateComment
 
 		commitComment := &github.RepositoryComment{Body: &formattedComment}
 		commitComment, _, err = githubClient.Repositories.CreateComment(context.Background(), *owner, *repo, *sha, commitComment)
