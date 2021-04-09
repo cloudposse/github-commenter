@@ -16,7 +16,7 @@ import (
 	"text/template"
 
 	"github.com/Masterminds/sprig"
-	"github.com/google/go-github/github"
+	"github.com/google/go-github/v34/github"
 	"github.com/pkg/errors"
 	"golang.org/x/net/context"
 )
@@ -47,6 +47,7 @@ var (
 	formatFile         = flag.String("format_file", os.Getenv("GITHUB_COMMENT_FORMAT_FILE"), "Alias of `template_file`")
 	comment            = flag.String("comment", os.Getenv("GITHUB_COMMENT"), "Comment text")
 	deleteCommentRegex = flag.String("delete-comment-regex", os.Getenv("GITHUB_DELETE_COMMENT_REGEX"), "Regex to find previous comments to delete before creating the new comment. Supported for comment types `commit`, `pr-file`, `issue` and `pr`")
+	editCommentRegex   = flag.String("edit-comment-regex", os.Getenv("GITHUB_EDIT_COMMENT_REGEX"), "Regex to find previous comments to replace with new content, or create new comment if none found. Supported for comment types `commit`, `pr-file`, `issue` and `pr`")
 	baseURL            = flag.String("baseURL", os.Getenv("GITHUB_BASE_URL"), "Base URL of github enterprise")
 	uploadURL          = flag.String("uploadURL", os.Getenv("GITHUB_UPLOAD_URL"), "Upload URL of github enterprise")
 	insecure           = flag.Bool("insecure", strings.ToLower(os.Getenv("GITHUB_INSECURE")) == "true", "Ignore SSL certificate check")
@@ -199,6 +200,7 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
+		commitComment := &github.RepositoryComment{Body: &formattedComment}
 
 		// Find and delete existing comment(s) before creating the new one
 		if *deleteCommentRegex != "" {
@@ -225,7 +227,36 @@ func main() {
 			}
 		}
 
-		commitComment := &github.RepositoryComment{Body: &formattedComment}
+		// Find and update existing comment with new content
+		if *editCommentRegex != "" {
+			found := false
+			r, err := regexp.Compile(*editCommentRegex)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			listOptions := &github.ListOptions{}
+			comments, _, err := githubClient.Repositories.ListCommitComments(context.Background(), *owner, *repo, *sha, listOptions)
+			if err != nil {
+				log.Println("github-commenter: Error listing commit comments: ", err)
+			} else {
+				for _, comment := range comments {
+					if r.MatchString(*comment.Body) {
+						found = true
+						_, _, err = githubClient.Repositories.UpdateComment(context.Background(), *owner, *repo, *comment.ID, commitComment)
+						if err != nil {
+							log.Fatal("github-commenter: Error updating commit comment: ", err)
+						} else {
+							log.Println("github-commenter: Updated commit comment: ", *comment.ID)
+						}
+					}
+				}
+			}
+			if found {
+				return // exit
+			}
+		}
+
 		commitComment, _, err = githubClient.Repositories.CreateComment(context.Background(), *owner, *repo, *sha, commitComment)
 		if err != nil {
 			log.Fatal(err)
@@ -272,6 +303,7 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
+		issueComment := &github.IssueComment{Body: &formattedComment}
 
 		// Find and delete existing comment(s) before creating the new one
 		if *deleteCommentRegex != "" {
@@ -297,8 +329,36 @@ func main() {
 				}
 			}
 		}
+		// Find and update existing comment(s) with new content
+		if *editCommentRegex != "" {
+			found := false
+			r, err := regexp.Compile(*editCommentRegex)
+			if err != nil {
+				log.Fatal(err)
+			}
 
-		issueComment := &github.IssueComment{Body: &formattedComment}
+			listOptions := &github.IssueListCommentsOptions{}
+			comments, _, err := githubClient.Issues.ListComments(context.Background(), *owner, *repo, num, listOptions)
+			if err != nil {
+				log.Println("github-commenter: Error listing Issue/PR comments: ", err)
+			} else {
+				for _, comment := range comments {
+					if r.MatchString(*comment.Body) {
+						found = true
+						_, _, err = githubClient.Issues.EditComment(context.Background(), *owner, *repo, *comment.ID, issueComment)
+						if err != nil {
+							log.Fatal("github-commenter: Error updating Issue/PR comment: ", err)
+						} else {
+							log.Println("github-commenter: Updated Issue/PR comment: ", *comment.ID)
+						}
+					}
+				}
+			}
+			if found {
+				return // exit
+			}
+		}
+
 		issueComment, _, err = githubClient.Issues.CreateComment(context.Background(), *owner, *repo, num, issueComment)
 		if err != nil {
 			log.Fatal(err)
@@ -336,6 +396,7 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
+		pullRequestComment := &github.PullRequestComment{Body: &formattedComment, Path: file, Position: &position, CommitID: sha}
 
 		// Find and delete existing comment(s) before creating the new one
 		if *deleteCommentRegex != "" {
@@ -362,7 +423,40 @@ func main() {
 			}
 		}
 
-		pullRequestComment := &github.PullRequestComment{Body: &formattedComment, Path: file, Position: &position, CommitID: sha}
+		// Find and update existing comment with new content
+		if *editCommentRegex != "" {
+			found := false
+			r, err := regexp.Compile(*editCommentRegex)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			// edit mode: create a new request with only the new comment body.
+			// The API call will fail if the req includes other fields (path, commit_id, position)
+			editComment := &github.PullRequestComment{Body: pullRequestComment.Body}
+
+			listOptions := &github.PullRequestListCommentsOptions{}
+			comments, _, err := githubClient.PullRequests.ListComments(context.Background(), *owner, *repo, num, listOptions)
+			if err != nil {
+				log.Println("github-commenter: Error listing PR file commit comments: ", err)
+			} else {
+				for _, comment := range comments {
+					if r.MatchString(*comment.Body) {
+						found = true
+						_, _, err = githubClient.PullRequests.EditComment(context.Background(), *owner, *repo, *comment.ID, editComment)
+						if err != nil {
+							log.Fatal("github-commenter: Error updating PR file comment: ", err)
+						} else {
+							log.Println("github-commenter: Updated PR file comment: ", *comment.ID)
+						}
+					}
+				}
+			}
+			if found {
+				return // exit
+			}
+		}
+
 		pullRequestComment, _, err = githubClient.PullRequests.CreateComment(context.Background(), *owner, *repo, num, pullRequestComment)
 		if err != nil {
 			log.Fatal(err)
