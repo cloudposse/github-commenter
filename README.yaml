@@ -84,6 +84,7 @@ usage: |-
   | format_file           | GITHUB_COMMENT_FORMAT_FILE   | Alias of `template_file`                                                                                                                                                          |
   | comment               | GITHUB_COMMENT               | Comment text. If neither `comment` nor `GITHUB_COMMENT` provided, will read from `stdin`                                                                                          |
   | delete-comment-regex  | GITHUB_DELETE_COMMENT_REGEX  | Regex to find previous comments to delete before creating the new comment. Supported for comment types `commit`, `pr-file`, `issue` and `pr`                                      |
+  | edit-comment-regex    | GITHUB_EDIT_COMMENT_REGEX    | Regex to find previous comments to replace with new content, or create new comment if none found. Supported for comment types `commit`, `pr-file`, `issue` and `pr`               |
   | baseURL               | GITHUB_BASE_URL              | Github Enterprise URL. _E.g._ `https://github.example.com/api/v3`                                                                                                                 |
   | uploadURL             | GITHUB_UPLOAD_URL            | Github Enterprise Upload URL to pass to the Github client                                                                                                                         |
   | insecure              | GITHUB_INSECURE              | Boolean to ignore SSL certificate check                                                                                                                                           | 
@@ -275,6 +276,10 @@ examples: |-
           -delete-comment-regex "test4" \
           -comment "New comment on the PR file"
   ```
+
+### `edit-comment-regex`
+
+The `-edit-comment-regex` flag operates similarly to the `-delete-comment-regex` except existing comments will be updated instead of deleted. If no matching comment is found a new comment is created.
 
 # Contributors to this project
 contributors:
