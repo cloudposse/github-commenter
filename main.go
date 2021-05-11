@@ -21,15 +21,21 @@ import (
 	"golang.org/x/net/context"
 )
 
+func newRoundTripper(accessToken string, insecure bool) http.RoundTripper {
+	// Reuse default transport that has timeouts and supports proxies
+	transport := http.DefaultTransport.(*http.Transport)
+	transport.TLSClientConfig = &tls.Config{InsecureSkipVerify: insecure}
+	return &roundTripper{accessToken, transport}
+}
+
 type roundTripper struct {
 	accessToken string
-	insecure    bool
+	underlying  http.RoundTripper
 }
 
 func (rt roundTripper) RoundTrip(r *http.Request) (*http.Response, error) {
 	r.Header.Set("Authorization", fmt.Sprintf("token %s", rt.accessToken))
-	transport := http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: rt.insecure}}
-	return transport.RoundTrip(r)
+	return rt.underlying.RoundTrip(r)
 }
 
 var (
@@ -167,7 +173,8 @@ func main() {
 		log.Fatal("-type or GITHUB_COMMENT_TYPE must be one of 'commit', 'pr', 'issue', 'pr-review' or 'pr-file'")
 	}
 
-	http.DefaultClient.Transport = roundTripper{*token, *insecure}
+	http.DefaultClient.Transport = newRoundTripper{*token, *insecure}
+
 	var githubClient *github.Client
 	if *baseURL != "" || *uploadURL != "" {
 		if *baseURL == "" {
