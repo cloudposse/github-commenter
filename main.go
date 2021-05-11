@@ -173,7 +173,7 @@ func main() {
 		log.Fatal("-type or GITHUB_COMMENT_TYPE must be one of 'commit', 'pr', 'issue', 'pr-review' or 'pr-file'")
 	}
 
-	http.DefaultClient.Transport = newRoundTripper{*token, *insecure}
+	http.DefaultClient.Transport = newRoundTripper(*token, *insecure)
 
 	var githubClient *github.Client
 	if *baseURL != "" || *uploadURL != "" {
