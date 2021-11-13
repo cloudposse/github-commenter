@@ -295,6 +295,7 @@ func main() {
 			prNumber = num
 
 		} else {
+			// https://developer.github.com/v3/pulls/reviews/#create-a-pull-request-review
 			num, err := getPullRequestOrIssueNumber(*number)
 			if err != nil {
 				log.Fatal(err)
@@ -302,7 +303,7 @@ func main() {
 			prNumber = num
 		}
 
-		// https://developer.github.com/v3/pulls/reviews/#create-a-pull-request-review
+		
 
 
 		comment, err := getComment()
