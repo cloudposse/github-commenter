@@ -70,9 +70,9 @@ func getPullRequestOrIssueNumber(str string) (int, error) {
 }
 
 
-func getPullRequestNumberFromSha( sha string,state string, base string, client *github.Client) (int, error) {
+func getPullRequestNumberFromSha( sha, state, base string, client *github.Client) (int, error) {
 
-	pullRequestsService :=client.PullRequests
+	pullRequestsService := client.PullRequests
 	opts :=  &github.PullRequestListOptions {
 		State: state,
 		Base: base,
@@ -284,6 +284,10 @@ func main() {
 	} else if *commentType == "pr-review" {
 		var prNumber int
 		if *useCommitShaforPR  {
+			if *baseBranch == ""  ||  *state == "" {
+				flag.PrintDefaults()
+				log.Fatal("github-commenter: ( -pr-state or GITHUB_PR_STATE ) and ( -basebranch or GITHUB_PR_BASE_BRANCH )  must be provided when using flag -use-sha-for-pr ")
+			}
 			num,err := getPullRequestNumberFromSha(*sha, *state, *baseBranch, githubClient)
 			if err != nil{
 				log.Fatal(err)
