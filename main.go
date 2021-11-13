@@ -51,9 +51,9 @@ var (
 	baseURL            = flag.String("baseURL", os.Getenv("GITHUB_BASE_URL"), "Base URL of github enterprise")
 	uploadURL          = flag.String("uploadURL", os.Getenv("GITHUB_UPLOAD_URL"), "Upload URL of github enterprise")
 	insecure           = flag.Bool("insecure", strings.ToLower(os.Getenv("GITHUB_INSECURE")) == "true", "Ignore SSL certificate check")
-	useCommitShaforPR  = flag.Bool("use-sha-for-pr", strings.ToLower(os.Getenv("USE_SHA_FOR_PR")) == "true", "Use commit sha to find PR number")
-	state              = flag.String("pr-state", os.Getenv("PR_STATE"), "State of the PR e.g closed,open. Default is open")
-	baseBranch         = flag.String("base-branch", os.Getenv("BASE"), "Base branch of pull request")
+	useCommitShaforPR  = flag.Bool("use-sha-for-pr", strings.ToLower(os.Getenv("GITHUB_USE_SHA_FOR_PR")) == "true", "Use commit sha to find PR number")
+	state              = flag.String("pr-state", os.Getenv("GITHUB_PR_STATE"), "State of the PR e.g closed,open. Default is open")
+	baseBranch         = flag.String("base-branch", os.Getenv("GITHUB_PR_BASE_BRANCH"), "Base branch of pull request")
 )
 
 func getPullRequestOrIssueNumber(str string) (int, error) {
