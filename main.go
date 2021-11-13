@@ -51,6 +51,9 @@ var (
 	baseURL            = flag.String("baseURL", os.Getenv("GITHUB_BASE_URL"), "Base URL of github enterprise")
 	uploadURL          = flag.String("uploadURL", os.Getenv("GITHUB_UPLOAD_URL"), "Upload URL of github enterprise")
 	insecure           = flag.Bool("insecure", strings.ToLower(os.Getenv("GITHUB_INSECURE")) == "true", "Ignore SSL certificate check")
+	useCommitShaforPR  = flag.Bool("use-sha-for-pr", strings.ToLower(os.Getenv("USE_SHA_FOR_PR")) == "true", "Use commit sha to find PR number")
+	state              = flag.String("pr-state", os.Getenv("PR_STATE"), "State of the PR e.g closed,open. Default is open")
+	baseBranch         = flag.String("base-branch", os.Getenv("BASE"), "Base branch of pull request")
 )
 
 func getPullRequestOrIssueNumber(str string) (int, error) {
@@ -64,6 +67,21 @@ func getPullRequestOrIssueNumber(str string) (int, error) {
 	}
 
 	return num, nil
+}
+
+
+func getPullRequestNumberFromSha( sha string,state string, base string, client *github.Client) (int, error) {
+
+	pullRequestsService :=client.PullRequests
+	opts :=  &github.PullRequestListOptions {
+		State: state,
+		Base: base,
+	}
+	pullRequests,_,err :=  pullRequestsService.ListPullRequestsWithCommit(context.Background(), *owner, *repo, sha, opts, )
+	if err !=nil {
+		return 0, err
+	}
+	return *pullRequests[0].Number, nil
 }
 
 func getPullRequestFilePosition(str string) (int, error) {
@@ -264,11 +282,24 @@ func main() {
 
 		log.Println("github-commenter: Created GitHub Commit comment", *commitComment.ID)
 	} else if *commentType == "pr-review" {
-		// https://developer.github.com/v3/pulls/reviews/#create-a-pull-request-review
-		num, err := getPullRequestOrIssueNumber(*number)
-		if err != nil {
-			log.Fatal(err)
+		var prNumber int
+		if *useCommitShaforPR  {
+			num,err := getPullRequestNumberFromSha(*sha, *state, *baseBranch, githubClient)
+			if err != nil{
+				log.Fatal(err)
+			}
+			prNumber = num
+
+		} else {
+			num, err := getPullRequestOrIssueNumber(*number)
+			if err != nil {
+				log.Fatal(err)
+			}
+			prNumber = num
 		}
+
+		// https://developer.github.com/v3/pulls/reviews/#create-a-pull-request-review
+
 
 		comment, err := getComment()
 		if err != nil {
@@ -281,7 +312,7 @@ func main() {
 		}
 
 		pullRequestReviewRequest := &github.PullRequestReviewRequest{Body: &formattedComment, Event: github.String("COMMENT")}
-		pullRequestReview, _, err := githubClient.PullRequests.CreateReview(context.Background(), *owner, *repo, num, pullRequestReviewRequest)
+		pullRequestReview, _, err := githubClient.PullRequests.CreateReview(context.Background(), *owner, *repo, prNumber, pullRequestReviewRequest)
 		if err != nil {
 			log.Fatal(err)
 		}
