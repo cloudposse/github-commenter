@@ -4,6 +4,7 @@ go 1.17
 
 require (
 	github.com/Masterminds/sprig v2.22.0+incompatible
+	github.com/Masterminds/sprig/v3 v3.2.2
 	github.com/google/go-github/v34 v34.0.0
 	github.com/pkg/errors v0.9.1
 	golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd
@@ -19,5 +20,5 @@ require (
 	github.com/mitchellh/copystructure v1.2.0 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/stretchr/testify v1.7.0 // indirect
-	golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2 // indirect
+	golang.org/x/crypto v0.0.0-20200414173820-0848c9571904 // indirect
 )
