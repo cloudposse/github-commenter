@@ -1,4 +1,4 @@
-FROM golang:1.17.7-buster as builder
+FROM golang:1.18.3-buster as builder
 ENV GO111MODULE=on
 ENV CGO_ENABLED=0
 WORKDIR /usr/src/
