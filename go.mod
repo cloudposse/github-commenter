@@ -6,7 +6,7 @@ require (
 	github.com/Masterminds/sprig v2.22.0+incompatible
 	github.com/google/go-github/v34 v34.0.0
 	github.com/pkg/errors v0.9.1
-	golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd
+	golang.org/x/net v0.0.0-20220622184535-263ec571b305
 )
 
 require (
