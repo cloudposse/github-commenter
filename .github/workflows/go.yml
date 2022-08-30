@@ -40,7 +40,7 @@ jobs:
           OUTPUT_PATH: ${{ github.workspace }}/release/${{ github.event.repository.name }}_
       # Upload artifacts for this build
       - name: 'Upload artifacts'
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: ${{ github.event.repository.name }}
           path: ${{ github.workspace }}/release/*
