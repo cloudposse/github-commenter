@@ -122,6 +122,9 @@ Command-line arguments take precedence over ENV vars.
 | baseURL               | GITHUB_BASE_URL              | Github Enterprise URL. _E.g._ `https://github.example.com/api/v3`                                                                                                                 |
 | uploadURL             | GITHUB_UPLOAD_URL            | Github Enterprise Upload URL to pass to the Github client                                                                                                                         |
 | insecure              | GITHUB_INSECURE              | Boolean to ignore SSL certificate check                                                                                                                                           | 
+| use-sha-for-pr        | GITHUB_USE_SHA_FOR_PR        | Boolean to use commit sha to find pull request. Used for cases when only commit sha is available and not pr number. Currently only supported for Comment type: `pr-review`        |                                                                                                                               | 
+| pr-state              | GITHUB_PR_STATE              | Pull request current state. (_e.g._ `open`, `closed`). Required for -use-sha-for-pr. Needed to filter pull requests to only one                                                   |                                                                            | 
+| base-branch           | GITHUB_PR_BASE_BRANCH        | Base branch of the Pull request. Required for -use-sha-for-pr.  Needed to filter pull requests to only one                                                                        |                                                      | 
 
 
 __NOTE__: The utility accepts the text of the comment from the command-line argument `comment`, from the ENV variable `GITHUB_COMMENT`, or from the standard input.
