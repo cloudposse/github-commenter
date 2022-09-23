@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/Masterminds/sprig v2.22.0+incompatible
-	github.com/google/go-github/v47 v47.0.0
+	github.com/google/go-github/v47 v47.1.0
 	github.com/pkg/errors v0.9.1
 	golang.org/x/net v0.0.0-20220826154423-83b083e8dc8b
 )
