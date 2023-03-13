@@ -21,12 +21,25 @@ jobs:
           GO111MODULE: on
           # Architectures to build for
           GOX_OSARCH: >-
-            windows/amd64
-            windows/arm64
-            linux/amd64
-            linux/arm64
+            darwin/386
             darwin/amd64
             darwin/arm64
+            freebsd/386
+            freebsd/amd64
+            freebsd/arm
+            linux/386
+            linux/amd64
+            linux/arm
+            linux/arm64
+            linux/s390x
+            netbsd/386
+            netbsd/amd64
+            netbsd/arm
+            openbsd/386
+            openbsd/amd64
+            windows/386
+            windows/amd64
+            windows/arm64
           OUTPUT_PATH: ${{ github.workspace }}/release/${{ github.event.repository.name }}_
       # Upload artifacts for this build
       - name: 'Upload artifacts'
