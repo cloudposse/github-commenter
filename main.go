@@ -16,7 +16,7 @@ import (
 	"text/template"
 
 	"github.com/Masterminds/sprig"
-	"github.com/google/go-github/v47/github"
+	"github.com/google/go-github/v50/github"
 	"github.com/pkg/errors"
 	"golang.org/x/net/context"
 )
@@ -75,16 +75,15 @@ func getPullRequestOrIssueNumber(str string) (int, error) {
 	return num, nil
 }
 
-
-func getPullRequestNumberFromSha( sha, state, base string, client *github.Client) (int, error) {
+func getPullRequestNumberFromSha(sha, state, base string, client *github.Client) (int, error) {
 
 	pullRequestsService := client.PullRequests
-	opts :=  &github.PullRequestListOptions {
+	opts := &github.PullRequestListOptions{
 		State: state,
-		Base: base,
+		Base:  base,
 	}
-	pullRequests,_,err :=  pullRequestsService.ListPullRequestsWithCommit(context.Background(), *owner, *repo, sha, opts, )
-	if err !=nil {
+	pullRequests, _, err := pullRequestsService.ListPullRequestsWithCommit(context.Background(), *owner, *repo, sha, opts)
+	if err != nil {
 		return 0, err
 	}
 	return *pullRequests[0].Number, nil
@@ -290,13 +289,13 @@ func main() {
 		log.Println("github-commenter: Created GitHub Commit comment", *commitComment.ID)
 	} else if *commentType == "pr-review" {
 		var prNumber int
-		if *useCommitShaforPR  {
-			if *baseBranch == ""  ||  *state == "" {
+		if *useCommitShaforPR {
+			if *baseBranch == "" || *state == "" {
 				flag.PrintDefaults()
 				log.Fatal("github-commenter: ( -pr-state or GITHUB_PR_STATE ) and ( -basebranch or GITHUB_PR_BASE_BRANCH )  must be provided when using flag -use-sha-for-pr ")
 			}
-			num,err := getPullRequestNumberFromSha(*sha, *state, *baseBranch, githubClient)
-			if err != nil{
+			num, err := getPullRequestNumberFromSha(*sha, *state, *baseBranch, githubClient)
+			if err != nil {
 				log.Fatal(err)
 			}
 			prNumber = num
@@ -309,9 +308,6 @@ func main() {
 			}
 			prNumber = num
 		}
-
-		
-
 
 		comment, err := getComment()
 		if err != nil {
