@@ -1,6 +1,9 @@
-name: 'Build CLI and attach to GitHub release'
+name: 'goreleaser'
 
 on:
+  pull_request:
+    types: [ opened, synchronize, reopened ]
+
   release:
     types: [ published ]
 
@@ -8,7 +11,7 @@ on:
 
 jobs:
   build:
-    name: 'Build CLI and attach to GitHub release'
+    name: 'Build Binaries'
     runs-on: ubuntu-latest
     steps:
       # Checkout the repo
@@ -27,7 +30,8 @@ jobs:
       - run: go version
 
       # Build and release
-      - name: Run GoReleaser
+      - name: Build release
+        if: (github.event_name == 'release' && github.event.action == 'published') || (github.event_name == 'workflow_dispatch' && github.ref_name == 'master')
         uses: goreleaser/goreleaser-action@v4
         with:
           distribution: goreleaser
@@ -35,3 +39,12 @@ jobs:
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Trial build
+      - name: Test build
+        if: github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && github.ref_name != 'master')
+        uses: goreleaser/goreleaser-action@v4
+        with:
+          distribution: goreleaser
+          version: latest
+          args: release --clean --snapshot
