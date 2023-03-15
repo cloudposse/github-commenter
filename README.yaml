@@ -277,9 +277,9 @@ examples: |-
           -comment "New comment on the PR file"
   ```
 
-### `edit-comment-regex`
-
-The `-edit-comment-regex` flag operates similarly to the `-delete-comment-regex` except existing comments will be updated instead of deleted. If no matching comment is found a new comment is created.
+  ### `edit-comment-regex`
+  
+  The `-edit-comment-regex` flag operates similarly to the `-delete-comment-regex` except existing comments will be updated instead of deleted. If no matching comment is found a new comment is created.
 
 # Contributors to this project
 contributors:
