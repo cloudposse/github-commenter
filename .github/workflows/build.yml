@@ -32,7 +32,7 @@ jobs:
       # Build and release
       - name: Build release
         if: (github.event_name == 'release' && github.event.action == 'published') || (github.event_name == 'workflow_dispatch' && github.ref_name == 'master')
-        uses: goreleaser/goreleaser-action@v4
+        uses: goreleaser/goreleaser-action@v5
         with:
           distribution: goreleaser
           version: latest
@@ -43,7 +43,7 @@ jobs:
       # Trial build
       - name: Test build
         if: github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && github.ref_name != 'master')
-        uses: goreleaser/goreleaser-action@v4
+        uses: goreleaser/goreleaser-action@v5
         with:
           distribution: goreleaser
           version: latest
