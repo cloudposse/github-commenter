@@ -24,7 +24,7 @@ jobs:
       - name: 'Setup Go'
         uses: actions/setup-go@v5
         with:
-          go-version: '1.19'
+          go-version: '1.25'
 
       # Print Go version
       - run: go version
