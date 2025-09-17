@@ -1,10 +1,11 @@
 module github.com/cloudposse/github-commenter
 
-go 1.19
+go 1.23.0
 
 require (
 	github.com/Masterminds/sprig v2.22.0+incompatible
 	github.com/google/go-github/v50 v50.2.0
+	github.com/google/go-github/v74 v74.0.0
 	github.com/pkg/errors v0.9.1
 	golang.org/x/net v0.17.0
 )
