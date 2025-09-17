@@ -20,3 +20,4 @@ dist/bin
 
 .build-harness
 build-harness
+.atmos
