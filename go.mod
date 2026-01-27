@@ -1,10 +1,11 @@
 module github.com/cloudposse/github-commenter
 
-go 1.19
+go 1.24.0
 
 require (
 	github.com/Masterminds/sprig v2.22.0+incompatible
 	github.com/google/go-github/v50 v50.2.0
+	github.com/google/go-github/v82 v82.0.0
 	github.com/pkg/errors v0.9.1
 	golang.org/x/net v0.17.0
 )
@@ -15,7 +16,7 @@ require (
 	github.com/ProtonMail/go-crypto v0.0.0-20230217124315-7d5c6f04bbb8 // indirect
 	github.com/cloudflare/circl v1.1.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
-	github.com/google/go-querystring v1.1.0 // indirect
+	github.com/google/go-querystring v1.2.0 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/huandu/xstrings v1.3.2 // indirect
 	github.com/imdario/mergo v0.3.13 // indirect
