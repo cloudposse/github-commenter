@@ -21,6 +21,9 @@ builds:
       - '386'
       - arm
       - arm64
+    ignore:
+      - goos: windows
+        goarch: arm
     binary: atmos
     ldflags:
       # -s Omit the symbol table and debug information
